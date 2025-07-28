@@ -1,0 +1,8 @@
+{
+  "HomeHero": {
+    "titulo": "Connect Studio",
+    "descipcion": "Plataforma diseñada para fortalecer el rendimiento académico de estudiantes con dificultades, mediante asesorías entre pares. A través de una interfaz intuitiva y colaborativa, los alumnos reciben apoyo de compañeros, fomentando el aprendizaje activo y el intercambio de conocimientos.",
+    "signUpButton": "Comienza ahora",
+    "loginButton": "Iniciar sesión"
+  }
+}
