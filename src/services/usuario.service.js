@@ -25,46 +25,6 @@ export const registrarUsuario = async ({
   }
 };
 
-// Funcion para validar login
-// export const loginUsuario = async ({ email, password }) => {
-//   try {
-//     const res = await fetch(`${BASE_URL}/usuarios/login`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({ email, password }),
-//     });
-
-//     const data = await res.json();
-//     return { success: res.ok, data };
-//   } catch (error) {
-//     console.log("Error al iniciar sesion: " + error.message);
-//     return { success: false, mensaje: "Error de conexion con el servidor" };
-//   }
-// };
-
-// Función para validar login
-// export const loginUsuario = async ({ email, password }) => {
-//   try {
-//     const res = await fetch(`${BASE_URL}/usuarios/login`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({ email, password }),
-//     });
-
-//     const data = await res.json();
-//     return { success: res.ok, data };
-//   } catch (error) {
-//     console.log("Error al iniciar sesión: " + error.message);
-//     return { success: false, mensaje: "Error de conexión con el servidor" };
-//   }
-// };
-
-// Funcion para validar login
-
 export const loginUsuario = async ({ email, password }) => {
   try {
     const res = await fetch(`${BASE_URL}usuarios/login`, {

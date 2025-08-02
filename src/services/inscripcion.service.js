@@ -1,4 +1,5 @@
-const BASE_URL = "http://localhost:3000";
+// Url base para consultas al servidor desde variable de entorno
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Mostrar todas las inscripciones
 export const mostrarInscripciones = async () => {
@@ -29,7 +30,7 @@ export const mostrarInscripcionesPorMatriculaAlumno = async (
 ) => {
   try {
     // Realizar la solicitud al backend
-    const respuesta = await fetch(`${BASE_URL}/inscripciones`, {
+    const respuesta = await fetch(`${BASE_URL}inscripciones`, {
       // Metodo de solicitud
       method: "POST",
       // Tipo de contenido
