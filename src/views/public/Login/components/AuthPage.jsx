@@ -22,10 +22,6 @@ const AuthPage = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
-    const BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
-    console.log("Login URL:", `${BASE_URL}/usuarios/login`);
-
     const { success, data, mensaje } = await loginUsuario({ email, password });
 
     if (success) {
