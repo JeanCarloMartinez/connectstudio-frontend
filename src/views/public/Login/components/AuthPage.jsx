@@ -35,7 +35,7 @@ const AuthPage = () => {
         navegacion("/admin");
       }
 
-      localStorage.setItem("idusuario", JSON.stringify(data.idusuario));
+      localStorage.setItem("idusuario", JSON.stringify(data.usuario.idusuario));
     } else {
       console.log("Error al iniciar sesión:", mensaje || data?.error);
     }

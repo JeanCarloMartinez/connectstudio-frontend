@@ -37,9 +37,9 @@ export const mostrarAlumnos = async () => {
 export const obtenerAlumno = async () => {
   try {
     // Obtener el idUsuario del localStorage
-    const idUsuario = localStorage.getItem("idUsuario");
+    const idUsuario = localStorage.getItem("idusuario");
     // Realizar la solicitud al backend
-    const respuesta = await fetch(`${BASE_URL}/alumnos/${idUsuario}`, {
+    const respuesta = await fetch(`${BASE_URL}alumnos/${idUsuario}`, {
       // Metodo de solicitud
       method: "GET",
       // Tipo de contenido

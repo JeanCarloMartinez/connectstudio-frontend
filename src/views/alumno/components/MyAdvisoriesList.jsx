@@ -14,24 +14,21 @@ const MyAdvisoriesList = ({ onNavigate, onGoToCourseBoard }) => {
     // Funcion que solicita las inscripciones al servidor
     const solicitarInscripciones = async () => {
       // Obtener dinamicamente los datos del alumno
-      // const respuestaAlumno = await obtenerAlumno();
-      // // Guardar los datos del alumno en una variable
-      // const alumno = respuestaAlumno.alumno;
+      const respuestaAlumno = await obtenerAlumno();
+      // Guardar los datos del alumno en una variable
+      const alumno = respuestaAlumno.alumno;
 
       // Validar si hay alumno y tiene matrícula
-      // if (!alumno || !alumno.matriculaAlumno) {
-      //   console.warn("No se encontró el alumno o su matrícula.");
-      //   return;
-      // }
+      if (!alumno || !alumno.matriculaalumno) {
+        console.warn("No se encontró el alumno o su matrícula.");
+        return;
+      }
 
       // Ejecutar la funcion pasando como parametro la matricula del alumno
-      // const respuesta = await mostrarInscripcionesPorMatriculaAlumno(
-      //   alumno.matriculaAlumno
-      // );
-
       const respuesta = await mostrarInscripcionesPorMatriculaAlumno(
-        "24300734"
+        alumno.matriculaalumno
       );
+
       console.log("Res: ", respuesta);
       console.log("Datos recibidos: ", respuesta.inscripciones);
 
