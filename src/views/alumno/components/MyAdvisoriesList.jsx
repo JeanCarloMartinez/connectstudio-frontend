@@ -42,12 +42,12 @@ const MyAdvisoriesList = ({ onNavigate, onGoToCourseBoard }) => {
           (inscripcion, index) => {
             return {
               id: index,
-              name: inscripcion.nombreCompletoUsuario || "Asesor sin nombre",
-              subject: inscripcion.nombreAsignatura || "Asignatura desconocida",
-              date: inscripcion.fechaAsesoria || "Sin fecha",
-              time: inscripcion.horaInicioAsesoria || "Sin hora",
-              description: inscripcion.descripcionCurso || "Sin descripción",
-              courseId: inscripcion.idCurso,
+              name: inscripcion.nombrecompletousuario || "Asesor sin nombre",
+              subject: inscripcion.nombreasignatura || "Asignatura desconocida",
+              date: inscripcion.fechaasesoria || "Sin fecha",
+              time: inscripcion.horainicioasesoria || "Sin hora",
+              description: inscripcion.descripcioncurso || "Sin descripción",
+              courseId: inscripcion.idcurso,
               status: "Próxima", // o calcula dinámicamente si quieres
             };
           }
