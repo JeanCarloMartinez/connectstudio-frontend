@@ -1,8 +1,38 @@
 {
-  "HomeHero": {
-    "titulo": "Connect Studio",
-    "descipcion": "Plataforma diseñada para fortalecer el rendimiento académico de estudiantes con dificultades, mediante asesorías entre pares. A través de una interfaz intuitiva y colaborativa, los alumnos reciben apoyo de compañeros, fomentando el aprendizaje activo y el intercambio de conocimientos.",
-    "signUpButton": "Comienza ahora",
-    "loginButton": "Iniciar sesión"
+  "Landing": {
+    "HomeHero": {
+      "titulo": "Connect Studio",
+      "descripcion": "Plataforma diseñada para fortalecer el rendimiento académico de estudiantes con dificultades, mediante asesorías entre pares. A través de una interfaz intuitiva y colaborativa, los alumnos reciben apoyo de compañeros, fomentando el aprendizaje activo y el intercambio de conocimientos.",
+      "signUpButton": "Comienza ahora",
+      "loginButton": "Iniciar sesión"
+    },
+    "Testimonios": {
+      "listaTestimonios": [
+        {
+          "nombre": "Ana G.",
+          "titulo": "Estudiante de Preparatoria",
+          "descipcion": "Connect Studio cambió mi forma de estudiar. Las asesorías entre compañeros son súper efectivas y me ayudaron a entender temas que antes se me complicaban un montón. ¡Totalmente recomendado!",
+          "imagen": null
+        },
+        {
+          "nombre": "Luis P.",
+          "titulo": "Estudiante Universitario",
+          "descipcion": "Gracias a esta plataforma, pude mejorar mis calificaciones en matemáticas. Encontrar a alguien que te explique con paciencia y de forma clara es invaluable. ¡Es un salvavidas académico!",
+          "imagen": null
+        },
+        {
+          "nombre": "Sofía R.",
+          "titulo": "Asesora Voluntaria",
+          "descipcion": "Me encanta la facilidad con la que puedes conectar con otros estudiantes. No solo recibes ayuda, sino que también aprendes a explicar y eso refuerza tu propio conocimiento. ¡Una comunidad increíble!",
+          "imagen": null
+        }
+      ]
+    }
+  },
+  "SignUp": {
+    "FormularioRegistro": {
+      "titulo": "Regístrate en Connect Studio",
+      "subtitulo": "Crea tu cuenta para empezar a aprender o enseñar."
+    }
   }
 }

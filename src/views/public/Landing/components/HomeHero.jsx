@@ -1,9 +1,15 @@
+// Importar useNavigate desde react-router-dom para navegar entre rutas
+import { useNavigate } from "react-router-dom";
+
 // Importar textos estaticos desde strings.json
 import strings from "./../../../../data/strings.json";
 
 const HomeHero = () => {
+  // Crear una instancia de useNavigate para redirigir a otras rutas
+  const navegacion = useNavigate();
   // Desestructurar los textos del componente HomeHero
-  const { titulo, descipcion, signUpButton, loginButton } = strings.HomeHero;
+  const { titulo, descripcion, signUpButton, loginButton } =
+    strings.Landing.HomeHero;
 
   // Renderizar el componente HomeHero
   return (
@@ -19,14 +25,13 @@ const HomeHero = () => {
           {titulo}
         </h1>
         <p className="text-lg md:text-xl text-blue-800 max-w-3xl mx-auto mb-10 leading-relaxed">
-          {descipcion}
+          {descripcion}
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <button
             className="px-8 py-3 bg-blue-700 text-white font-semibold rounded-full shadow-lg hover:bg-blue-800 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
             onClick={() => {
-              localStorage.setItem("view", "SignUp");
-              window.location.reload();
+              navegacion("/signup");
             }}
           >
             {signUpButton}
@@ -34,8 +39,7 @@ const HomeHero = () => {
           <button
             className="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300"
             onClick={() => {
-              localStorage.setItem("view", "Login");
-              window.location.reload();
+              navegacion("/login");
             }}
           >
             {loginButton}
@@ -73,4 +77,5 @@ const HomeHero = () => {
   );
 };
 
+// Exportar el componente HomeHero
 export default HomeHero;

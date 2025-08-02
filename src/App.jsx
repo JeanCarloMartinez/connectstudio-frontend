@@ -4,9 +4,20 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 
 // Importar componentes de React Router para la navegación
-import { Route, Routes } from "react-router-dom";
-// Importar componentes de vistas
+import { Route, Router, Routes } from "react-router-dom";
+
+// Importar componente Landing
 import Landing from "./views/public/Landing/Landing.jsx";
+// Importar componente SignUp
+import SignUp from "./views/public/SignUp/SignUp.jsx";
+// Importar componente Login
+import Login from "./views/public/Login/Login.jsx";
+// Importar componente Alumno
+import Alumno from "./views/alumno/Alumno.jsx";
+// Importar componente de Asesor
+import Asesor from "./views/asesor/Asesor.jsx";
+// Importar componente de Admin
+import Admin from "./views/admin/Admin.jsx";
 
 function App() {
   // Declarar variables de estado y su función para actualizarlas
@@ -20,6 +31,11 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/alumno" element={<Alumno />} />
+      <Route path="/asesor" element={<Asesor />} />
+      <Route path="/admin" element={<Admin />} />
     </Routes>
   );
 
