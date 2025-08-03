@@ -6,9 +6,9 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
     { name: "Estudiantes", page: "students" },
     { name: "Asesores", page: "advisors" },
     { name: "Usuarios de Connect Studio", page: "users" },
-    { name: "Cursos", page: "courses" },                // Nuevo
-    { name: "Aulas", page: "classrooms" },              // Nuevo
-    { name: "Asignaturas", page: "subjects" },          // Nuevo
+    { name: "Cursos", page: "courses" }, // Nuevo
+    { name: "Aulas", page: "classrooms" }, // Nuevo
+    { name: "Asignaturas", page: "subjects" }, // Nuevo
     { name: "Inscribir Alumno a Curso", page: "enroll" }, // Nuevo
     { name: "Perfil", page: "profile" },
   ];
@@ -49,7 +49,7 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
                 }).then((result) => {
                   if (result.isConfirmed) {
                     localStorage.clear();
-                    window.location.reload();
+                    window.location.href = "/";
                   }
                 });
               }}

@@ -46,10 +46,10 @@ const Admin = () => {
       if (response.success) {
         // Mapea los datos para que tengan las propiedades que usas
         const alumnosFormateados = response.alumnos.map((alumno) => ({
-          id: alumno.idUsuario, // usa idUsuario para el id
-          name: alumno.nombreCompletoUsuario, // nombre completo
-          email: alumno.emailUsuario, // email
-          group: alumno.grupoUsuario || "", // grupo o vacío si es null
+          id: alumno.idusuario, // usa idUsuario para el id
+          name: alumno.nombrecompletousuario, // nombre completo
+          email: alumno.emailusuario, // email
+          group: alumno.grupousuario || "", // grupo o vacío si es null
         }));
         setStudents(alumnosFormateados);
       } else {
@@ -66,9 +66,9 @@ const Admin = () => {
       console.log("Datos recibidos asesores:", response.asesores);
       if (response.success) {
         const asesoresFormateados = response.asesores.map((asesor) => ({
-          id: asesor.idUsuario,
-          name: asesor.nombreCompletoUsuario,
-          email: asesor.emailUsuario,
+          id: asesor.idusuario,
+          name: asesor.nombrecompletousuario,
+          email: asesor.emailusuario,
         }));
         setAdvisors(asesoresFormateados);
       } else {

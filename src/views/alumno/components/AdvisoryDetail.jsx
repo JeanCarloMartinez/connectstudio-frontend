@@ -13,7 +13,7 @@ const AdvisoryDetail = ({ advisory, onBackToList, onJoinAdvisory }) => {
     const cargarAlumno = async () => {
       const respuesta = await obtenerAlumno();
       if (respuesta.success) {
-        setMatriculaAlumno(respuesta.alumno.matriculaAlumno);
+        setMatriculaAlumno(respuesta.alumno.matriculaalumno);
       }
     };
 

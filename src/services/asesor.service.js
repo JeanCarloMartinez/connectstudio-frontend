@@ -4,7 +4,7 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 // Funcion para mostrar los asesores
 export const mostrarAsesores = async () => {
   try {
-    const res = await fetch(`${BASE_URL}/asesores`, {
+    const res = await fetch(`${BASE_URL}asesores`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -5,7 +5,7 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 export const mostrarAlumnos = async () => {
   try {
     // Realizar la solicitud al backend
-    const respuesta = await fetch(`${BASE_URL}/alumnos`, {
+    const respuesta = await fetch(`${BASE_URL}alumnos`, {
       // Metodo de solicitud
       method: "GET",
       // Tipo de contenido
