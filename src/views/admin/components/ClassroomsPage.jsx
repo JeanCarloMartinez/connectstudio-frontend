@@ -1,19 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 
+// Importar el servicio de aulas
+import { mostrarAulas } from "./../../../services/aula.service";
+
 const ClassroomsPage = () => {
+  // Estado para almacenar las aulas
   const [classrooms, setClassrooms] = useState([
     { idAula: "A001", name: "Laboratorio de Cómputo" },
     { idAula: "A002", name: "Aula Magna" },
-    { idAula: "A003", name: "Salón de Usos Múltiples" }
+    { idAula: "A003", name: "Salón de Usos Múltiples" },
   ]);
+
+  // Cargar aulas al montar el componente
+  useEffect(() => {
+    const fetchClassrooms = async () => {
+      const response = await mostrarAulas();
+      console.log("datos recibidos de aulas:", response.aulas);
+      if (response.success) {
+        // mapear los datos recibidos para el estado
+        const aulasFormateadas = response.aulas.map((aula) => ({
+          idAula: aula.idaula,
+          name: aula.nombreaula,
+        }));
+        setClassrooms(aulasFormateadas);
+      } else {
+        console.error("Error al cargar las aulas:", response.message);
+      }
+    };
+
+    fetchClassrooms();
+  }, []);
 
   // Ver detalles del aula
   const handleView = (classroom) => {
     Swal.fire({
       title: classroom.name,
       html: `<strong>ID del Aula:</strong> ${classroom.idAula}`,
-      icon: "info"
+      icon: "info",
     });
   };
 
@@ -26,14 +50,18 @@ const ClassroomsPage = () => {
       inputValue: classroom.name,
       showCancelButton: true,
       confirmButtonText: "Guardar cambios",
-      cancelButtonText: "Cancelar"
+      cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed && result.value.trim() !== "") {
         const updatedClassrooms = classrooms.map((c) =>
           c.idAula === classroom.idAula ? { ...c, name: result.value } : c
         );
         setClassrooms(updatedClassrooms);
-        Swal.fire("Actualizado", "El nombre del aula ha sido modificado", "success");
+        Swal.fire(
+          "Actualizado",
+          "El nombre del aula ha sido modificado",
+          "success"
+        );
       }
     });
   };
@@ -48,10 +76,12 @@ const ClassroomsPage = () => {
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
       confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6"
+      cancelButtonColor: "#3085d6",
     }).then((result) => {
       if (result.isConfirmed) {
-        const updatedClassrooms = classrooms.filter((c) => c.idAula !== classroom.idAula);
+        const updatedClassrooms = classrooms.filter(
+          (c) => c.idAula !== classroom.idAula
+        );
         setClassrooms(updatedClassrooms);
         Swal.fire("Eliminado", "El aula ha sido eliminada", "success");
       }
@@ -60,13 +90,21 @@ const ClassroomsPage = () => {
 
   return (
     <div className="overflow-x-auto bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-      <h3 className="text-2xl font-semibold text-gray-800 mb-6">Lista de Aulas</h3>
+      <h3 className="text-2xl font-semibold text-gray-800 mb-6">
+        Lista de Aulas
+      </h3>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">ID Aula</th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nombre del Aula</th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Acciones</th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+              ID Aula
+            </th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+              Nombre del Aula
+            </th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+              Acciones
+            </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">

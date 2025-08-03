@@ -1,10 +1,10 @@
 // Url base para consultas al servidor desde variable de entorno
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-// Funcion para mostrar todas las asignaturas
-export const mostrarAsignaturas = async () => {
+// Funcion para mostrar todas las aulas
+export const mostrarAulas = async () => {
   try {
-    const res = await fetch(`${BASE_URL}asignaturas`, {
+    const res = await fetch(`${BASE_URL}aulas`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -15,10 +15,10 @@ export const mostrarAsignaturas = async () => {
 
     return {
       success: res.ok,
-      asignaturas: data.asignaturas || [], // CORREGIDO
+      aulas: data.aulas || [], // CORREGIDO
     };
   } catch (error) {
-    console.log("Error al mostrar asignaturas: " + error.message);
+    console.log("Error al mostrar aulas: " + error.message);
     return { success: false, mensaje: "Error de conexión con el servidor" };
   }
 };

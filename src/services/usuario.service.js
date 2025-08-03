@@ -46,7 +46,7 @@ export const loginUsuario = async ({ email, password }) => {
 // Funcion para mostrar los usuarios
 export const mostrarUsuarios = async () => {
   try {
-    const res = await fetch(`${BASE_URL}/usuarios`, {
+    const res = await fetch(`${BASE_URL}usuarios`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

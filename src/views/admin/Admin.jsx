@@ -20,6 +20,8 @@ import Swal from "sweetalert2";
 import { mostrarAlumnos } from "./../../services/alumno.service";
 // Servicio para obtener asesores desde backend
 import { mostrarAsesores } from "./../../services/asesor.service";
+// Servicio para obtener usuarios desde backend
+import { mostrarUsuarios } from "./../../services/usuario.service";
 
 const Admin = () => {
   const [currentPage, setCurrentPage] = useState("students");
@@ -87,10 +89,10 @@ const Admin = () => {
       // Aquí cambia la condición igual que en los otros:
       if (response.usuarios && Array.isArray(response.usuarios)) {
         const usuariosFormateados = response.usuarios.map((usuario) => ({
-          id: usuario.idUsuario,
-          name: usuario.nombreCompleto,
-          email: usuario.email,
-          role: usuario.tipoUsuario,
+          id: usuario.idusuario,
+          name: usuario.nombrecompletousuario,
+          email: usuario.emailusuario,
+          role: usuario.tipousuario,
         }));
         setUsers(usuariosFormateados);
       } else {

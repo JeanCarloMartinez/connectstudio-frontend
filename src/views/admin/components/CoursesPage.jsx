@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+// Importar useEffect y useState de React
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+// Servicio para obtener cursos desde backend
+import { mostrarCursos } from "./../../../services/curso.service";
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([
@@ -8,23 +11,42 @@ const CoursesPage = () => {
       name: "Matemáticas Avanzadas",
       description: "Curso intensivo de álgebra, cálculo y estadística",
       advisorId: "A001",
-      advisorMatricula: "MAT12345"
+      advisorMatricula: "MAT12345",
     },
     {
       id: 2,
       name: "Historia Universal",
       description: "Estudio cronológico de los principales eventos históricos",
       advisorId: "A002",
-      advisorMatricula: "HIS67890"
+      advisorMatricula: "HIS67890",
     },
     {
       id: 3,
       name: "Programación Web",
       description: "HTML, CSS, JavaScript y frameworks modernos",
       advisorId: "A003",
-      advisorMatricula: "PRO11223"
-    }
+      advisorMatricula: "PRO11223",
+    },
   ]);
+
+  // Ejecutar una sola vez al montar el componente
+  useEffect(() => {
+    const solicitarCursos = async () => {
+      const respuesta = await mostrarCursos();
+      if (respuesta.success) {
+        const cursosFormateados = respuesta.cursos.map((curso) => ({
+          id: curso.idcurso,
+          name: curso.titulocurso,
+          description: curso.descripcioncurso || "Sin descripción",
+          advisorMatricula: curso.matriculaasesor,
+        }));
+        console.log("Cursos formateados:", cursosFormateados);
+        setCourses(cursosFormateados);
+      }
+    };
+
+    solicitarCursos();
+  }, []);
 
   // Ver detalles
   const handleView = (course) => {
@@ -35,7 +57,7 @@ const CoursesPage = () => {
         <strong>ID Asesor:</strong> ${course.advisorId}<br/>
         <strong>Matrícula Asesor:</strong> ${course.advisorMatricula}
       `,
-      icon: "info"
+      icon: "info",
     });
   };
 
@@ -48,14 +70,18 @@ const CoursesPage = () => {
       inputValue: course.name,
       showCancelButton: true,
       confirmButtonText: "Guardar cambios",
-      cancelButtonText: "Cancelar"
+      cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed && result.value.trim() !== "") {
         const updatedCourses = courses.map((c) =>
           c.id === course.id ? { ...c, name: result.value } : c
         );
         setCourses(updatedCourses);
-        Swal.fire("Actualizado", "El nombre del curso ha sido modificado", "success");
+        Swal.fire(
+          "Actualizado",
+          "El nombre del curso ha sido modificado",
+          "success"
+        );
       }
     });
   };
@@ -70,7 +96,7 @@ const CoursesPage = () => {
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
       confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6"
+      cancelButtonColor: "#3085d6",
     }).then((result) => {
       if (result.isConfirmed) {
         const updatedCourses = courses.filter((c) => c.id !== course.id);
@@ -82,15 +108,24 @@ const CoursesPage = () => {
 
   return (
     <div className="overflow-x-auto bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-      <h3 className="text-2xl font-semibold text-gray-800 mb-6">Lista de Cursos</h3>
+      <h3 className="text-2xl font-semibold text-gray-800 mb-6">
+        Lista de Cursos
+      </h3>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nombre del Curso</th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Descripción</th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">ID Asesor</th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Matrícula Asesor</th>
-            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Acciones</th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+              Nombre del Curso
+            </th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+              Descripción
+            </th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+              Matrícula Asesor
+            </th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+              Acciones
+            </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
@@ -98,7 +133,6 @@ const CoursesPage = () => {
             <tr key={course.id}>
               <td className="px-4 py-3">{course.name}</td>
               <td className="px-4 py-3">{course.description}</td>
-              <td className="px-4 py-3">{course.advisorId}</td>
               <td className="px-4 py-3">{course.advisorMatricula}</td>
               <td className="px-4 py-3 flex gap-2">
                 <button
