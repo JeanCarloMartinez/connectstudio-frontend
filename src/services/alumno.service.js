@@ -186,19 +186,21 @@ export const registrarAlumno = async ({
 // }; // Fin de la funcion editarAlumno
 
 export const editarAlumno = async ({
-  idUsuario,
   nombreCompletoUsuario,
   matricula,
   emailUsuario,
   fechaNacimientoUsuario,
   direccionUsuario,
-  passwordUsuario,
   fotoPerfilUsuario,
   carreraAlumno,
   grupoAlumno,
   promedioAlumno,
 }) => {
+  fotoPerfilUsuario =
+    "https://static.displate.com/857x1200/displate/2023-06-01/223be9f8eccefa8cc09e5de8495b3719_44285b86c3c11293120f7be853096240.jpg"; // Asignar una imagen por defecto si no se proporciona una
   try {
+    // Obtener el idUsuario del localStorage
+    const idUsuario = localStorage.getItem("idusuario");
     const res = await fetch(`${BASE_URL}alumnos/${idUsuario}`, {
       method: "PUT",
       headers: {
@@ -210,7 +212,6 @@ export const editarAlumno = async ({
         emailUsuario,
         fechaNacimientoUsuario,
         direccionUsuario,
-        passwordUsuario,
         fotoPerfilUsuario,
         carreraAlumno,
         grupoAlumno,

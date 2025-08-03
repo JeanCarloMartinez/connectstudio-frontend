@@ -43,12 +43,13 @@ const UserProfile = ({}) => {
         setNombreCarrera(alumno.carreraalumno || "");
         setPromedioAlumno(alumno.promedioalumno || null);
         setGrupoAlumno(alumno.grupoalumno || "");
+        setProfileImage(alumno.fotoperfilusuario);
       }
     }; // Fin de la funcion solicitarDatosAlumno
 
-    setProfileImage(
-      "https://res.cloudinary.com/diwlilhyq/image/upload/v1754181124/WhatsApp_Image_2025-08-02_at_6.13.30_PM_hbbjwo.jpg"
-    );
+    // setProfileImage(
+    //   "https://res.cloudinary.com/diwlilhyq/image/upload/v1754181124/WhatsApp_Image_2025-08-02_at_6.13.30_PM_hbbjwo.jpg"
+    // );
 
     // Ejecutar la funcion solicitarDatosAlumno
     solicitarDatosAlumno();
