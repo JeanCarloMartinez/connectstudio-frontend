@@ -34,17 +34,21 @@ const UserProfile = ({}) => {
       const alumno = respuesta.alumno;
       // Validar si la respuesta fue exitosa
       if (respuesta.success) {
-        setNombreCompletoUsuario(alumno.nombreCompletoUsuario || "");
-        setEmailUsuario(alumno.emailUsuario || "");
-        setTelefonoUsuario(alumno.telefonoUsuario || "");
-        setDireccionUsuario(alumno.direccionUsuario || "");
-        setFechaNacimientoUsuario(alumno.fechaNacimientoUsuario || "");
-        setMatriculaAlumno(alumno.matriculaAlumno || "");
-        setNombreCarrera(alumno.carreraAlumno || "");
-        setPromedioAlumno(alumno.promedioAlumno || null);
-        setGrupoAlumno(alumno.grupoAlumno || "");
+        setNombreCompletoUsuario(alumno.nombrecompletousuario || "");
+        setEmailUsuario(alumno.emailusuario || "");
+        setTelefonoUsuario(alumno.telefonousuario || "");
+        setDireccionUsuario(alumno.direccionusuario || "");
+        setFechaNacimientoUsuario(alumno.fechanacimientousuario || "");
+        setMatriculaAlumno(alumno.matriculaalumno || "");
+        setNombreCarrera(alumno.carreraalumno || "");
+        setPromedioAlumno(alumno.promedioalumno || null);
+        setGrupoAlumno(alumno.grupoalumno || "");
       }
     }; // Fin de la funcion solicitarDatosAlumno
+
+    setProfileImage(
+      "https://res.cloudinary.com/diwlilhyq/image/upload/v1754181124/WhatsApp_Image_2025-08-02_at_6.13.30_PM_hbbjwo.jpg"
+    );
 
     // Ejecutar la funcion solicitarDatosAlumno
     solicitarDatosAlumno();

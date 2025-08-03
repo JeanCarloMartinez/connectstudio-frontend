@@ -38,7 +38,7 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 // Función para mostrar las citas según la matrícula del alumno
 export const mostrarCitasPorMatriculaAlumno = async (matriculaAlumno) => {
   try {
-    const res = await fetch(`${BASE_URL}/citas`, {
+    const res = await fetch(`${BASE_URL}citas`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

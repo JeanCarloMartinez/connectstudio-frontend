@@ -139,9 +139,53 @@ export const registrarAlumno = async ({
   }
 };
 
-// funcion para editar los datos de un alumno mediante idUsuario
+// // funcion para editar los datos de un alumno mediante idUsuario
+// export const editarAlumno = async ({
+//   // Parámetros que se enviarán para la actualización
+//   idUsuario,
+//   nombreCompletoUsuario,
+//   matricula,
+//   emailUsuario,
+//   fechaNacimientoUsuario,
+//   direccionUsuario,
+//   passwordUsuario,
+// }) => {
+//   try {
+//     // Realizar la solicitud PUT al backend con el idUsuario en la URL
+//     const respuesta = await fetch(`${BASE_URL}/alumnos/${idUsuario}`, {
+//       method: "PUT", // Método para actualizar recursos
+//       headers: {
+//         "Content-Type": "application/json", // Indicar que se envía JSON
+//       },
+//       // Convertir los datos en formato JSON para enviarlos en el body
+//       body: JSON.stringify({
+//         nombreCompletoUsuario,
+//         matricula,
+//         emailUsuario,
+//         fechaNacimientoUsuario,
+//         direccionUsuario,
+//         passwordUsuario,
+//       }),
+//     });
+
+//     // Validar si la respuesta fue exitosa
+//     if (respuesta.ok) {
+//       // Mostrar mensaje en caso de éxito
+//       console.log("✅ ALUMNO ACTUALIZADO CON ÉXITO");
+//       return { success: true };
+//     } else {
+//       // Mostrar mensaje en caso de error en la actualización
+//       console.log("❌ ERROR AL ACTUALIZAR ALUMNO");
+//       return { success: false };
+//     }
+//   } catch (error) {
+//     // Capturar y mostrar cualquier error ocurrido durante la petición
+//     console.log("❌ ERROR EN editarAlumno: " + error.message);
+//     return { success: false };
+//   }
+// }; // Fin de la funcion editarAlumno
+
 export const editarAlumno = async ({
-  // Parámetros que se enviarán para la actualización
   idUsuario,
   nombreCompletoUsuario,
   matricula,
@@ -149,15 +193,17 @@ export const editarAlumno = async ({
   fechaNacimientoUsuario,
   direccionUsuario,
   passwordUsuario,
+  fotoPerfilUsuario,
+  carreraAlumno,
+  grupoAlumno,
+  promedioAlumno,
 }) => {
   try {
-    // Realizar la solicitud PUT al backend con el idUsuario en la URL
-    const respuesta = await fetch(`${BASE_URL}/alumnos/${idUsuario}`, {
-      method: "PUT", // Método para actualizar recursos
+    const res = await fetch(`${BASE_URL}alumnos/${idUsuario}`, {
+      method: "PUT",
       headers: {
-        "Content-Type": "application/json", // Indicar que se envía JSON
+        "Content-Type": "application/json",
       },
-      // Convertir los datos en formato JSON para enviarlos en el body
       body: JSON.stringify({
         nombreCompletoUsuario,
         matricula,
@@ -165,25 +211,36 @@ export const editarAlumno = async ({
         fechaNacimientoUsuario,
         direccionUsuario,
         passwordUsuario,
+        fotoPerfilUsuario,
+        carreraAlumno,
+        grupoAlumno,
+        promedioAlumno,
       }),
     });
 
-    // Validar si la respuesta fue exitosa
-    if (respuesta.ok) {
-      // Mostrar mensaje en caso de éxito
+    const data = await res.json();
+
+    if (res.ok) {
       console.log("✅ ALUMNO ACTUALIZADO CON ÉXITO");
-      return { success: true };
+      return {
+        success: true,
+        mensaje: data.mensaje || "Alumno actualizado correctamente",
+      };
     } else {
-      // Mostrar mensaje en caso de error en la actualización
       console.log("❌ ERROR AL ACTUALIZAR ALUMNO");
-      return { success: false };
+      return {
+        success: false,
+        mensaje: data.error || "Error al actualizar alumno",
+      };
     }
   } catch (error) {
-    // Capturar y mostrar cualquier error ocurrido durante la petición
     console.log("❌ ERROR EN editarAlumno: " + error.message);
-    return { success: false };
+    return {
+      success: false,
+      mensaje: "Error de conexión con el servidor",
+    };
   }
-}; // Fin de la funcion editarAlumno
+};
 
 // funcion para eliminar un alumno mediante idUsuario
 export const eliminarAlumno = async () => {}; // Fin de la funcion eliminarAlumno

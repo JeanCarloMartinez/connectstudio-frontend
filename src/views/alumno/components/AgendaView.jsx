@@ -1,80 +1,83 @@
-// Importar useState y useEffect
 import { useState, useEffect } from "react";
-// Importar fullcalendar
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
-// Importar
+import interactionPlugin from "@fullcalendar/interaction";
 import Swal from "sweetalert2";
-// Importar funciones del servicio citas
 import { mostrarCitasPorMatriculaAlumno } from "./../../../services/cita.service";
-// Importar funciones del servicio alumno
 import { obtenerAlumno } from "./../../../services/alumno.service";
 
 const AgendaView = () => {
-  // Declarar variables useState similar a getters y setters
   const [eventos, setEventos] = useState([]);
 
-  // 🆕 Estado opcional para manejar notas si quieres separar visualmente
-  // const [notas, setNotas] = useState([]);
+  // Render personalizado del contenido de eventos
+  const renderEvento = (info) => {
+    const tipo = info.event.extendedProps?.tipo;
 
-  // Al cargar la pagina por primera vez, se ejecuta esta funcion
+    return (
+      <div
+        className={`p-2 rounded-lg shadow-sm text-sm font-medium ${
+          tipo === "nota"
+            ? "bg-yellow-100 text-yellow-800 border border-yellow-400"
+            : "bg-blue-100 text-blue-800 border border-blue-400"
+        }`}
+      >
+        {info.event.title}
+      </div>
+    );
+  };
+
   useEffect(() => {
-    // Funcion que solicita las citas al servidor
     const solicitarCitas = async () => {
-      // Obtener dinamicamente los datos del alumno
       const respuestaAlumno = await obtenerAlumno();
-      // Guardar los datos del alumno en una variable
       const alumno = respuestaAlumno.alumno;
-      // Ejecutar la funcion pasando como parametro la matricula del alumno
       const respuesta = await mostrarCitasPorMatriculaAlumno(
-        alumno.matriculaAlumno
+        alumno.matriculaalumno
       );
 
-      // Validar si la respuesta fue exitosa
       if (respuesta.success) {
-        // Mapear los datos para que se usen las propiedades del frontend
         const eventosFormateados = respuesta.citas.map((cita) => ({
-          title: `${cita.tituloCurso} - ${cita.nombreAsignatura}`,
-          start: `${cita.fechaAsesoria.split("T")[0]}T${
-            cita.horaInicioAsesoria
+          title: `${cita.titulocurso} - ${cita.nombreasignatura}`,
+          start: `${cita.fechaasesoria.split("T")[0]}T${
+            cita.horainicioasesoria
           }`,
-          end: `${cita.fechaAsesoria.split("T")[0]}T${
-            cita.horaTerminoAsesoria
+          end: `${cita.fechaasesoria.split("T")[0]}T${
+            cita.horaterminoasesoria
           }`,
+          backgroundColor: "#dbeafe", // azul claro
+          borderColor: "#3b82f6", // azul
+          textColor: "#1e3a8a",
           extendedProps: { ...cita },
         }));
-
-        // Agregar el nuevo valor a eventos
         setEventos(eventosFormateados);
       }
-      console.log("Datos recibidos: ", respuesta.citas);
-    }; // Fin de la funcion solicitarCitas
+    };
 
-    // Ejecutar la funcion solicitarCitas
     solicitarCitas();
   }, []);
 
-  // 🆕 Función para agregar nota personal
-  const agregarNota = async () => {
+  const manejarClickFecha = async (info) => {
+    const fecha = info.dateStr.split("T")[0];
+    const hora = info.dateStr.includes("T")
+      ? info.dateStr.split("T")[1].slice(0, 5)
+      : "08:00";
+
     const { value: formValues } = await Swal.fire({
       title: "Agregar nota",
       html: `
         <input type="text" id="titulo" class="swal2-input" placeholder="Título de la nota">
-        <input type="date" id="fecha" class="swal2-input">
-        <input type="time" id="hora" class="swal2-input">
+        <input type="date" id="fecha" class="swal2-input" value="${fecha}">
+        <input type="time" id="hora" class="swal2-input" value="${hora}">
       `,
       focusConfirm: false,
       preConfirm: () => {
         const titulo = document.getElementById("titulo").value;
         const fecha = document.getElementById("fecha").value;
         const hora = document.getElementById("hora").value;
-
         if (!titulo || !fecha || !hora) {
           Swal.showValidationMessage("Todos los campos son obligatorios");
           return false;
         }
-
         return { titulo, fecha, hora };
       },
     });
@@ -84,13 +87,13 @@ const AgendaView = () => {
         title: `📝 ${formValues.titulo}`,
         start: `${formValues.fecha}T${formValues.hora}`,
         end: `${formValues.fecha}T${formValues.hora}`,
+        backgroundColor: "#fef3c7",
+        borderColor: "#f59e0b",
+        textColor: "#78350f",
         extendedProps: {
           tipo: "nota",
           descripcion: "Nota personal agregada por el alumno.",
         },
-        backgroundColor: "#facc15", // Amarillo claro (opcional)
-        borderColor: "#f59e0b", // Amarillo oscuro
-        textColor: "#000000", // Texto negro
       };
 
       setEventos((prev) => [...prev, nuevaNota]);
@@ -98,7 +101,6 @@ const AgendaView = () => {
     }
   };
 
-  // 🆕 Ajuste para mostrar notas también
   const verDetallesCita = ({ event }) => {
     const datos = event.extendedProps;
 
@@ -106,36 +108,31 @@ const AgendaView = () => {
       Swal.fire({
         title: event.title,
         html: `
-        <p><strong>Hora:</strong> ${event.start.toLocaleTimeString()}</p>
-        <p><strong>Descripción:</strong> ${datos.descripcion}</p>
-        <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
-          <button id="editarNota" class="swal2-confirm swal2-styled" style="background-color: #2563eb;">Editar</button>
-          <button id="eliminarNota" class="swal2-cancel swal2-styled" style="background-color: #dc2626;">Eliminar</button>
-        </div>
-      `,
+          <p><strong>Hora:</strong> ${event.start.toLocaleTimeString()}</p>
+          <p><strong>Descripción:</strong> ${datos.descripcion}</p>
+          <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+            <button id="editarNota" class="swal2-confirm swal2-styled" style="background-color: #2563eb;">Editar</button>
+            <button id="eliminarNota" class="swal2-cancel swal2-styled" style="background-color: #dc2626;">Eliminar</button>
+          </div>
+        `,
         showConfirmButton: false,
         didOpen: () => {
-          // Eliminar nota
-          const btnEliminar = document.getElementById("eliminarNota");
-          if (btnEliminar) {
-            btnEliminar.addEventListener("click", () => {
+          document
+            .getElementById("eliminarNota")
+            ?.addEventListener("click", () => {
               Swal.close();
-              setEventos((prevEventos) =>
-                prevEventos.filter((e) => e !== event)
-              );
+              setEventos((prev) => prev.filter((e) => e !== event));
               Swal.fire("Nota eliminada", "", "success");
             });
-          }
 
-          // Editar nota
-          const btnEditar = document.getElementById("editarNota");
-          if (btnEditar) {
-            btnEditar.addEventListener("click", async () => {
+          document
+            .getElementById("editarNota")
+            ?.addEventListener("click", async () => {
               Swal.close();
               const { value: formValues } = await Swal.fire({
                 title: "Editar nota",
                 html: `
-                <input type="text" id="titulo" class="swal2-input" placeholder="Título de la nota" value="${event.title.replace(
+                <input type="text" id="titulo" class="swal2-input" value="${event.title.replace(
                   "📝 ",
                   ""
                 )}">
@@ -151,14 +148,12 @@ const AgendaView = () => {
                   const titulo = document.getElementById("titulo").value;
                   const fecha = document.getElementById("fecha").value;
                   const hora = document.getElementById("hora").value;
-
                   if (!titulo || !fecha || !hora) {
                     Swal.showValidationMessage(
                       "Todos los campos son obligatorios"
                     );
                     return false;
                   }
-
                   return { titulo, fecha, hora };
                 },
               });
@@ -170,53 +165,47 @@ const AgendaView = () => {
                   start: `${formValues.fecha}T${formValues.hora}`,
                   end: `${formValues.fecha}T${formValues.hora}`,
                 };
-
-                setEventos((prevEventos) =>
-                  prevEventos.map((e) => (e === event ? notaEditada : e))
+                setEventos((prev) =>
+                  prev.map((e) => (e === event ? notaEditada : e))
                 );
-
                 Swal.fire("Nota editada correctamente", "", "success");
               }
             });
-          }
         },
       });
     } else {
       Swal.fire({
-        title: datos.tituloCurso,
+        title: datos.titulocurso,
         html: `
-        <p><strong>Asignatura:</strong> ${datos.nombreAsignatura}</p>
-        <p><strong>Asesor:</strong> ${datos.nombreCompletoUsuario}</p>
-        <p><strong>Horario:</strong> ${datos.horaInicioAsesoria} - ${datos.horaTerminoAsesoria}</p>
-        <p><strong>Descripción:</strong> ${datos.descripcionCurso}</p>
-      `,
+          <p><strong>Asignatura:</strong> ${datos.nombreasignatura}</p>
+          <p><strong>Asesor:</strong> ${datos.nombrecompletousuario}</p>
+          <p><strong>Horario:</strong> ${datos.horainicioasesoria} - ${datos.horaterminoasesoria}</p>
+          <p><strong>Descripción:</strong> ${datos.descripcioncurso}</p>
+        `,
       });
     }
-  }; // <- cierre de useEffect
-
-  // ... agregarNota y verDetallesCita ya están definidos arriba ...
+  };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Mi Agenda</h1>
-      <button
-        onClick={agregarNota}
-        className="mb-4 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-      >
-        Agregar Nota
-      </button>
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin]}
-        initialView="timeGridWeek"
-        events={eventos}
-        eventClick={verDetallesCita}
-        headerToolbar={{
-          left: "prev,next today",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
-        }}
-        height="auto"
-      />
+    <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Mi Agenda</h1>
+      <div className="bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden">
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView="timeGridWeek"
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          }}
+          height="auto"
+          aspectRatio={1.5}
+          events={eventos}
+          eventClick={verDetallesCita}
+          dateClick={manejarClickFecha}
+          eventContent={renderEvento} // 👈 se usa este renderizador
+        />
+      </div>
     </div>
   );
 };
