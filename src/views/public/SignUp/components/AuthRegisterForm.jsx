@@ -196,7 +196,7 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
             <span className="ml-2 text-gray-700 text-sm">
               Acepto los{" "}
               <a
-                href="/terminos-y-privacidad.html"
+                href="./../../../../../terminos-y-politicas-de-privacidad.html"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 underline hover:text-blue-800"

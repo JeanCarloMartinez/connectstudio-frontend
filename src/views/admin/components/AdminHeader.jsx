@@ -1,6 +1,30 @@
-import React from 'react';
+import { useEffect, useState } from "react";
+// Importar el servicio
+import { obtenerAdmin } from "./../../../services/admin.service";
 
 const AdminHeader = ({ title }) => {
+  // Declarar estados para las variables
+  const [nombre, setNombre] = useState("Admin");
+  // Al cargar la pagina por primera vez, se ejecuta esta funcion
+  useEffect(() => {
+    // Funcion que solicita los datos del admin al servidor
+    const solicitarDatosAdmin = async () => {
+      // Obtener dinamicamente los datos del admin
+      const respuesta = await obtenerAdmin();
+      console.log("Datos obtenidos de admin", respuesta.admin);
+      // Guardar los datos del admin en una variable
+      const admin = respuesta.admin;
+      console.log(admin);
+      // Validar si la respuesta fue exitosa
+      if (respuesta.success) {
+        setNombre(admin.nombrecompletousuario || "Admin");
+      }
+    }; // Fin de la funcion solicitarDatosAdmin
+
+    // Ejecutar la funcion solicitarDatosAdmin
+    solicitarDatosAdmin();
+  }, []);
+
   return (
     <header className="bg-white shadow-md p-6 flex items-center justify-between fixed top-0 left-64 right-0 z-10">
       <h1 className="text-4xl font-extrabold text-gray-800">{title}</h1>
@@ -25,7 +49,7 @@ const AdminHeader = ({ title }) => {
           <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
             AD
           </div>
-          <span className="text-gray-700 font-medium">Admin</span>
+          <span className="text-gray-700 font-medium">{nombre}</span>
         </div>
       </div>
     </header>
