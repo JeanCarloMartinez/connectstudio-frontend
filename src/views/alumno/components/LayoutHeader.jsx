@@ -13,7 +13,7 @@ const LayoutHeader = ({ currentPage, onNavigate }) => {
     { name: "Agenda", page: "agenda" },
     { name: "Recompensas", page: "rewards" },
     { name: "Perfil", page: "profile" },
-    { name: "Mensajes", page: "messages" },
+    // { name: "Mensajes", page: "messages" },
   ];
 
   return (

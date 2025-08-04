@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
-const CourseBoard = ({ courseId, onBackToMyAdvisories }) => {
+const CourseBoard = ({ advisory, onBackToMyAdvisories }) => {
+  console.log("Advisory recibido en CourseBoard:", advisory);
+
   // Mock data para el tablón del curso
-  console.log("editame pls");
-  console.log("courseId: ", courseId);
   const mockCourseData = {
     1: {
       title: "Cálculo Diferencial e Integral",
@@ -113,7 +113,7 @@ const CourseBoard = ({ courseId, onBackToMyAdvisories }) => {
       ],
     },
   };
-
+  const courseId = advisory.idcourse;
   const course = mockCourseData[courseId];
   const [newDiscussionComment, setNewDiscussionComment] = useState("");
 
@@ -162,13 +162,13 @@ const CourseBoard = ({ courseId, onBackToMyAdvisories }) => {
         </button>
 
         <h2 className="text-3xl font-bold text-gray-800 mb-4">
-          {course.title}
+          {advisory.subject}
         </h2>
         <p className="text-gray-600 mb-6">
-          Instructor: <span className="font-medium">{course.instructor}</span>
+          Instructor: <span className="font-medium">{advisory.name}</span>
         </p>
         <p className="text-gray-700 leading-relaxed mb-8">
-          {course.description}
+          {advisory.description}
         </p>
 
         {/* Sección de Materiales */}

@@ -117,7 +117,14 @@ const MyAdvisoriesList = ({ onNavigate, onGoToCourseBoard }) => {
                 <div className="flex justify-end space-x-3">
                   {advisory.status === "Próxima" && (
                     <button
-                      onClick={() => onGoToCourseBoard(advisory.courseId)}
+                      // onClick={() => onGoToCourseBoard(advisory.courseId)}
+                      onClick={() => {
+                        console.log(
+                          "Enviando advisory a CourseBoard:",
+                          advisory
+                        );
+                        onGoToCourseBoard(advisory);
+                      }}
                       className="px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition-colors font-semibold text-sm"
                     >
                       Ir a la Sala

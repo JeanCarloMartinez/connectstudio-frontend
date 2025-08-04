@@ -16,7 +16,7 @@ function Alumno() {
   const [currentPage, setCurrentPage] = useState("home");
   const [selectedAdvisory, setSelectedAdvisory] = useState(null);
   const [viewedStudent, setViewedStudent] = useState(null);
-  const [currentCourseId, setCurrentCourseId] = useState(null); // Estado para el ID del curso
+  // const [currentCourseId, setCurrentCourseId] = useState(null); // Estado para el ID del curso
 
   const mockStudents = [
     {
@@ -43,7 +43,7 @@ function Alumno() {
     setCurrentPage(page);
     setSelectedAdvisory(null);
     setViewedStudent(null);
-    setCurrentCourseId(null); // Resetear el ID del curso al cambiar de página
+    // setCurrentCourseId(null); // Resetear el ID del curso al cambiar de página
   };
 
   const handleSelectAdvisory = (advisory) => {
@@ -69,8 +69,8 @@ function Alumno() {
     setCurrentPage("studentProfileView");
   };
 
-  const handleGoToCourseBoard = (courseId) => {
-    setCurrentCourseId(courseId);
+  const handleGoToCourseBoard = (advisory) => {
+    setSelectedAdvisory(advisory); // Guarda el objeto completo
     setCurrentPage("courseBoard");
   };
 
@@ -120,10 +120,11 @@ function Alumno() {
       case "courseBoard":
         return (
           <CourseBoard
-            courseId={currentCourseId}
+            advisory={selectedAdvisory} // pasa el objeto completo
             onBackToMyAdvisories={handleBackToMyAdvisories}
           />
         );
+
       case "materias":
         return <MateriasView />;
       default:
