@@ -30,7 +30,7 @@ const MyAdvisoriesList = ({ onNavigate, onGoToCourseBoard }) => {
       );
 
       console.log("Res: ", respuesta);
-      console.log("Datos recibidos: ", respuesta.inscripciones);
+      // console.log("Datos recibidos: ", respuesta.inscripciones);
 
       // Validar si la respuesta fue exitosa
       if (respuesta.success) {
@@ -46,9 +46,12 @@ const MyAdvisoriesList = ({ onNavigate, onGoToCourseBoard }) => {
               description: inscripcion.descripcioncurso || "Sin descripción",
               courseId: inscripcion.idcurso,
               status: "Próxima", // o calcula dinámicamente si quieres
+              idcourse: inscripcion.idcurso,
             };
           }
         );
+
+        console.log("Inscripciones formateadas: ", InscripcionesFormateadas);
 
         // Agregar el nuevo valor a eventos
         setInscripciones(InscripcionesFormateadas);

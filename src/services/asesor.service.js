@@ -32,9 +32,9 @@ export const mostrarAsesores = async () => {
 export const obtenerAsesor = async () => {
   try {
     // Obtener el idUsuario del localStorage
-    const idUsuario = localStorage.getItem("idUsuario");
+    const idUsuario = localStorage.getItem("idusuario");
     // Realizar la solicitud al backend
-    const respuesta = await fetch(`${BASE_URL}/asesores/${idUsuario}`, {
+    const respuesta = await fetch(`${BASE_URL}asesores/${idUsuario}`, {
       // Metodo de solicitud
       method: "GET",
       // Tipo de contenido

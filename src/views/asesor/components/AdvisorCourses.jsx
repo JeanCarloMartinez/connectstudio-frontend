@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { mostrarCursosPorMatricula } from "../../../services/curso.service";
 import { obtenerAsesor } from "../../../services/asesor.service";
 import { mostrarActividadesPorCurso } from "../../../services/actividad.service";
+// Importar la funcion registrarCurso del servicio
+import { registrarCurso } from "../../../services/curso.service";
+// Importar la funcion mostrarAsignaturas del servicio
+import { mostrarAsignaturas } from "../../../services/asignatura.service";
 
 const AdvisorCourses = () => {
   const [cursos, setCursos] = useState([]);
@@ -11,24 +15,40 @@ const AdvisorCourses = () => {
   const [newCourseTitle, setNewCourseTitle] = useState("");
   const [newCourseSubject, setNewCourseSubject] = useState("");
 
+  const [asesor, setAsesor] = useState(null);
+  const [newCourseDescription, setNewCourseDescription] = useState("");
+
+  const [asignaturas, setAsignaturas] = useState([]);
+
   useEffect(() => {
     const solicitarCursos = async () => {
       const respuestaAsesor = await obtenerAsesor();
       const asesor = respuestaAsesor.asesor;
-      if (!asesor || !asesor.matriculaAsesor) return;
+      setAsesor(asesor);
+      if (!asesor || !asesor.matriculaasesor) return;
 
-      const respuesta = await mostrarCursosPorMatricula(asesor.matriculaAsesor);
+      const respuesta = await mostrarCursosPorMatricula(asesor.matriculaasesor);
       if (respuesta.success) {
         const cursosFormateados = respuesta.cursos.map((curso) => ({
-          id: curso.idCurso,
-          titulo: curso.tituloCurso,
-          nombre: curso.nombreAsignatura,
-          estudiantesInscritos: curso.estudiantesInscritos,
+          id: curso.idcurso,
+          titulo: curso.titulocurso,
+          nombre: curso.nombreasignatura,
+          estudiantesInscritos: curso.estudiantesInscritos || 0,
         }));
         setCursos(cursosFormateados);
       }
     };
     solicitarCursos();
+
+    const solicitarAsignaturas = async () => {
+      const respuesta = await mostrarAsignaturas();
+      if (respuesta.success) {
+        console.log("Datos de asignaturas:", respuesta.asignaturas);
+      }
+
+      setAsignaturas(respuesta.asignaturas || []);
+    };
+    solicitarAsignaturas();
   }, []);
 
   const abrirCurso = async (course) => {
@@ -48,15 +68,24 @@ const AdvisorCourses = () => {
   const handleCreateCourse = () => {
     if (newCourseTitle && newCourseSubject) {
       const newCourse = {
-        id: cursos.length + 1,
         titulo: newCourseTitle,
-        nombre: newCourseSubject,
-        estudiantesInscritos: 0,
+        descripcion: newCourseDescription,
+        asignatura: newCourseSubject,
       };
-      setCursos([...cursos, newCourse]);
+
+      // Limpiar los campos de texto del formulario
       setNewCourseTitle("");
-      setNewCourseSubject("");
+      setNewCourseDescription("");
+
+      // Cerrar el modal de creación de curso
       setShowCreateCourseModal(false);
+
+      registrarCurso(
+        newCourse.titulo,
+        newCourse.descripcion,
+        newCourse.asignatura,
+        asesor.matriculaasesor
+      );
     }
   };
 
@@ -208,16 +237,39 @@ const AdvisorCourses = () => {
                 htmlFor="courseSubject"
                 className="block text-gray-700 text-sm font-medium mb-2"
               >
-                Asignatura
+                Descripción
               </label>
               <input
                 type="text"
-                id="courseSubject"
-                value={newCourseSubject}
-                onChange={(e) => setNewCourseSubject(e.target.value)}
+                id="courseDescription"
+                value={newCourseDescription}
+                onChange={(e) => setNewCourseDescription(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                placeholder="Nombre de la asignatura"
+                placeholder="Descripción del curso"
               />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="courseSubject"
+                className="block text-gray-700 text-sm font-medium mb-2"
+              >
+                Asignatura
+              </label>
+              <select
+                name=""
+                id="courseSubject"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                onChange={(e) => setNewCourseSubject(e.target.value)}
+              >
+                {asignaturas.map((asignatura) => (
+                  <option
+                    key={asignatura.idasignatura}
+                    value={asignatura.idasignatura}
+                  >
+                    {asignatura.nombreasignatura}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex justify-end space-x-4">
               <button

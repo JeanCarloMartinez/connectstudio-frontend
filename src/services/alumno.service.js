@@ -184,7 +184,6 @@ export const registrarAlumno = async ({
 //     return { success: false };
 //   }
 // }; // Fin de la funcion editarAlumno
-
 export const editarAlumno = async ({
   nombreCompletoUsuario,
   matricula,
@@ -242,6 +241,3 @@ export const editarAlumno = async ({
     };
   }
 };
-
-// funcion para eliminar un alumno mediante idUsuario
-export const eliminarAlumno = async () => {}; // Fin de la funcion eliminarAlumno

@@ -30,16 +30,19 @@ export const mostrarInscripcionesPorMatriculaAlumno = async (
 ) => {
   try {
     // Realizar la solicitud al backend
-    const respuesta = await fetch(`${BASE_URL}inscripciones`, {
-      // Metodo de solicitud
-      method: "POST",
-      // Tipo de contenido
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // Pasar los datos a JSON
-      body: JSON.stringify({ matriculaAlumno }),
-    });
+    const respuesta = await fetch(
+      `${BASE_URL}inscripciones/${matriculaAlumno}`,
+      {
+        // Metodo de solicitud
+        method: "GET",
+        // Tipo de contenido
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // // Pasar los datos a JSON
+        // body: JSON.stringify({ matriculaAlumno }),
+      }
+    );
 
     // Guardar los datos en una variable
     const data = await respuesta.json();
@@ -50,6 +53,7 @@ export const mostrarInscripcionesPorMatriculaAlumno = async (
     }
 
     // Retornar si se realizo la operacion y el objeto con la informacion consultada
+    console.log("Datos recibidos: ", data.inscripciones);
     return {
       success: respuesta.ok,
       inscripciones: data.inscripciones || [],

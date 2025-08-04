@@ -36,7 +36,7 @@ export const mostrarCursos = async () => {
 // Mostrar cursos por matrícula del asesor
 export const mostrarCursosPorMatricula = async (matricula) => {
   try {
-    const res = await fetch(`${BASE_URL}/cursos/${matricula}`, {
+    const res = await fetch(`${BASE_URL}cursos/${matricula}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -57,21 +57,35 @@ export const mostrarCursosPorMatricula = async (matricula) => {
   }
 };
 
-// Registrar curso
-export const registrarCurso = async (curso) => {
+// Funcion para registrar un nuevo curso desde le ftontend
+export const registrarCurso = async (
+  tituloCurso,
+  descripcionCurso,
+  idAsignatura,
+  matriculaAsesor
+) => {
   try {
-    const res = await fetch(`${BASE_URL}/cursos`, {
+    const res = await fetch(`${BASE_URL}cursos/registrar`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(curso),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tituloCurso,
+        descripcionCurso,
+        idAsignatura,
+        matriculaAsesor,
+      }),
     });
+
     const data = await res.json();
+
     return {
       success: res.ok,
       mensaje: data.mensaje || data.error,
     };
   } catch (error) {
-    console.log("Error al registrar curso:", error.message);
+    console.log("❌ ERROR AL REGISTRAR AL NUEVO CURSO: " + error.message);
     return {
       success: false,
       mensaje: "Error de conexión con el servidor",
