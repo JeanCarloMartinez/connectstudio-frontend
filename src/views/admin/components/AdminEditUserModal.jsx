@@ -4,6 +4,7 @@ import AdminButton from "./AdminButton";
 import Swal from "sweetalert2";
 
 import { editarAlumno_panelAdmin } from "../../../services/alumno.service";
+import { editarAsesor_panelAdmin } from "../../../services/asesor.service";
 
 const AdminEditUserModal = ({ user, onClose, onSave }) => {
   const [editedUser, setEditedUser] = useState(user);
@@ -55,28 +56,108 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
       cancelButtonText: "Cancelar",
     });
 
-    if (result.isConfirmed) {
-      try {
-        // Llamar a editarAlumno con los datos necesarios y adaptados
-        const response = await editarAlumno_panelAdmin({
-          idUsuario: editedUser.id, // Asegúrate de que editedUser tenga un id
-          nombreCompletoUsuario: editedUser.name,
-          matricula: editedUser.matricula,
-          emailUsuario: editedUser.email,
-          fechaNacimientoUsuario: editedUser.fechaNacimiento,
-          direccionUsuario: editedUser.direccion,
-          fotoPerfilUsuario: editedUser.fotoPerfilUsuario, // si tienes esta propiedad en editedUser
-          carreraAlumno: editedUser.carrera,
-          grupoAlumno: editedUser.group,
-          promedioAlumno: editedUser.promedio,
-        });
+    // if (result.isConfirmed) {
+    //   console.log("Guardando cambios para el usuario:", editedUser);
 
-        if (response.success) {
-          Swal.fire("Guardado", response.mensaje, "success");
-          onSave(editedUser);
-          onClose();
-        } else {
-          Swal.fire("Error", response.mensaje, "error");
+    //   try {
+    //     const cleanValue = (value) => {
+    //       return value === "No especificado" ? "" : value;
+    //     };
+
+    //     // Llamar a editarAlumno con los datos necesarios y adaptados
+    //     const response = await editarAlumno_panelAdmin({
+    //       idUsuario: editedUser.id,
+    //       nombreCompletoUsuario: cleanValue(editedUser.name),
+    //       matricula: cleanValue(editedUser.matricula),
+    //       emailUsuario: cleanValue(editedUser.email),
+    //       fechaNacimientoUsuario: cleanValue(editedUser.fechaNacimiento),
+    //       direccionUsuario: cleanValue(editedUser.direccion),
+    //       fotoPerfilUsuario: cleanValue(editedUser.fotoPerfilUsuario),
+    //       carreraAlumno: cleanValue(editedUser.carrera),
+    //       grupoAlumno: cleanValue(editedUser.group),
+    //       promedioAlumno: cleanValue(editedUser.promedio),
+    //     });
+
+    //     if (response.success) {
+    //       Swal.fire("Guardado", response.mensaje, "success");
+    //       onSave(editedUser);
+    //       onClose();
+    //     } else {
+    //       Swal.fire("Error", response.mensaje, "error");
+    //     }
+    //   } catch (error) {
+    //     Swal.fire("Error", "Error inesperado al guardar", "error");
+    //   }
+    // }
+
+    if (result.isConfirmed) {
+      console.log("Guardando cambios para el usuario:", editedUser);
+
+      try {
+        const cleanValue = (value) => {
+          return value === "No especificado" ? "" : value;
+        };
+
+        switch (editedUser.role) {
+          case "Estudiante":
+            // Llamar a editarAlumno con los datos necesarios y adaptados
+            const response = await editarAlumno_panelAdmin({
+              idUsuario: editedUser.id,
+              nombreCompletoUsuario: cleanValue(editedUser.name),
+              matricula: cleanValue(editedUser.matricula),
+              emailUsuario: cleanValue(editedUser.email),
+              fechaNacimientoUsuario: cleanValue(editedUser.fechaNacimiento),
+              direccionUsuario: cleanValue(editedUser.direccion),
+              fotoPerfilUsuario: cleanValue(editedUser.fotoPerfilUsuario),
+              carreraAlumno: cleanValue(editedUser.carrera),
+              grupoAlumno: cleanValue(editedUser.group),
+              promedioAlumno: cleanValue(editedUser.promedio),
+            });
+
+            if (response.success) {
+              Swal.fire("Guardado", response.mensaje, "success");
+              onSave(editedUser);
+              onClose();
+            } else {
+              Swal.fire("Error", response.mensaje, "error");
+            }
+            break;
+          case "admin":
+            // llamar a editarAdministrador()
+            Swal.fire(
+              "Info",
+              "Función de edición de administrador no implementada",
+              "info"
+            );
+            break;
+
+          case "Asesor":
+            // Llamar a editarAlumno con los datos necesarios y adaptados
+            const response2 = await editarAsesor_panelAdmin({
+              idUsuario: editedUser.id,
+              nombreCompletoUsuario: cleanValue(editedUser.name),
+              matricula: cleanValue(editedUser.matricula),
+              emailUsuario: cleanValue(editedUser.email),
+              fechaNacimientoUsuario: cleanValue(editedUser.fechaNacimiento),
+              direccionUsuario: cleanValue(editedUser.direccion),
+              fotoPerfilUsuario: cleanValue(editedUser.fotoPerfilUsuario),
+              carreraAsesor: cleanValue(editedUser.carrera),
+              grupoAsesor: cleanValue(editedUser.group),
+              promedioAsesor: cleanValue(editedUser.promedio),
+            });
+
+            if (response2.success) {
+              Swal.fire("Guardado", response2.mensaje, "success");
+              onSave(editedUser);
+              onClose();
+            } else {
+              Swal.fire("Error", response2.mensaje, "error");
+            }
+            break;
+
+          default:
+            Swal.fire("Error", "Tipo de usuario no reconocido", "error");
+            break;
         }
       } catch (error) {
         Swal.fire("Error", "Error inesperado al guardar", "error");

@@ -133,3 +133,60 @@ export const registrarAsesor = async ({
     };
   }
 };
+
+// Funcion para editar los datos de un asesor mediante el panel de admin
+export const editarAsesor_panelAdmin = async ({
+  idUsuario,
+  nombreCompletoUsuario,
+  matricula,
+  emailUsuario,
+  fechaNacimientoUsuario,
+  direccionUsuario,
+  fotoPerfilUsuario,
+  carreraAsesor,
+  grupoAsesor,
+  promedioAsesor,
+}) => {
+  try {
+    const res = await fetch(`${BASE_URL}asesores/${idUsuario}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        idUsuario,
+        nombreCompletoUsuario,
+        matriculaAsesor: matricula,
+        emailUsuario,
+        fechaNacimientoUsuario,
+        direccionUsuario,
+        fotoPerfilUsuario,
+        carreraAsesor,
+        grupoAsesor,
+        promedioAsesor,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      console.log("✅ ASESOR ACTUALIZADO CON ÉXITO");
+      return {
+        success: true,
+        mensaje: data.mensaje || "Asesor actualizado correctamente",
+      };
+    } else {
+      console.log("❌ ERROR AL ACTUALIZAR ASESOR");
+      return {
+        success: false,
+        mensaje: data.error || "Error al actualizar asesor",
+      };
+    }
+  } catch (error) {
+    console.log("❌ ERROR EN editarAsesorAdmin: " + error.message);
+    return {
+      success: false,
+      mensaje: "Error de conexión con el servidor",
+    };
+  }
+}; // Fin de la funcion editarAsesorAdmin

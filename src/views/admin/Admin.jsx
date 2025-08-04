@@ -66,6 +66,8 @@ const Admin = () => {
           group: alumno.grupoalumno || "No especificado", // grupo o vacío si es null
 
           fechaNacimiento: alumno.fechanacimientousuario || "No especificado", // fecha de nacimiento o vacío si es null
+
+          role: alumno.tipousuario,
         }));
         setStudents(alumnosFormateados);
       } else {
@@ -93,6 +95,8 @@ const Admin = () => {
           group: asesor.grupoasesor || "No especificado", // grupo o vacío si es null
 
           fechaNacimiento: asesor.fechanacimientousuario || "No especificado", // fecha de nacimiento o vacío si es null
+
+          role: asesor.tipousuario,
         }));
         setAdvisors(asesoresFormateados);
       } else {
