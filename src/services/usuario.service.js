@@ -73,7 +73,7 @@ export const mostrarUsuarios = async () => {
 // Funcion para eliminar usuario por id
 export const eliminarUsuario = async (idUsuario) => {
   try {
-    const res = await fetch(`${BASE_URL}/usuarios/${idUsuario}`, {
+    const res = await fetch(`${BASE_URL}usuarios/eliminar${idUsuario}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

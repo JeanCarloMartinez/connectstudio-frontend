@@ -20,8 +20,11 @@ import Swal from "sweetalert2";
 import { mostrarAlumnos } from "./../../services/alumno.service";
 // Servicio para obtener asesores desde backend
 import { mostrarAsesores } from "./../../services/asesor.service";
-// Servicio para obtener usuarios desde backend
-import { mostrarUsuarios } from "./../../services/usuario.service";
+// Servicio para obtener y eliminar usuarios desde backend
+import {
+  mostrarUsuarios,
+  eliminarUsuario,
+} from "./../../services/usuario.service";
 
 const Admin = () => {
   const [currentPage, setCurrentPage] = useState("students");
@@ -81,28 +84,28 @@ const Admin = () => {
     fetchAsesores();
   }, []);
 
+  const fetchUsuarios = async () => {
+    const response = await mostrarUsuarios();
+    console.log("Datos recibidos usuarios:", response.usuarios);
+
+    // Aquí cambia la condición igual que en los otros:
+    if (response.usuarios && Array.isArray(response.usuarios)) {
+      const usuariosFormateados = response.usuarios.map((usuario) => ({
+        id: usuario.idusuario,
+        name: usuario.nombrecompletousuario,
+        email: usuario.emailusuario,
+        role: usuario.tipousuario,
+      }));
+      setUsers(usuariosFormateados);
+    } else {
+      console.error(
+        "Error al cargar usuarios:",
+        response.mensaje || "No hay usuarios"
+      );
+    }
+  };
+
   useEffect(() => {
-    const fetchUsuarios = async () => {
-      const response = await mostrarUsuarios();
-      console.log("Datos recibidos usuarios:", response.usuarios);
-
-      // Aquí cambia la condición igual que en los otros:
-      if (response.usuarios && Array.isArray(response.usuarios)) {
-        const usuariosFormateados = response.usuarios.map((usuario) => ({
-          id: usuario.idusuario,
-          name: usuario.nombrecompletousuario,
-          email: usuario.emailusuario,
-          role: usuario.tipousuario,
-        }));
-        setUsers(usuariosFormateados);
-      } else {
-        console.error(
-          "Error al cargar usuarios:",
-          response.mensaje || "No hay usuarios"
-        );
-      }
-    };
-
     fetchUsuarios();
   }, []);
 
@@ -135,15 +138,11 @@ const Admin = () => {
         Swal.fire("Eliminado", res.mensaje, "success");
 
         // Recarga los usuarios para actualizar la lista
-        const response = await mostrarUsuarios();
-        if (response.success) {
-          const usuariosFormateados = response.usuarios.map((usuario) => ({
-            id: usuario.idUsuario,
-            name: usuario.nombreCompleto,
-            email: usuario.email,
-            role: usuario.tipoUsuario,
-          }));
-          setUsers(usuariosFormateados);
+        if (res.success) {
+          Swal.fire("Eliminado", res.mensaje, "success").then(() => {
+            fetchUsuarios();
+            window.location.reload();
+          });
         }
       } else {
         Swal.fire("Error", res.mensaje, "error");
@@ -275,6 +274,9 @@ const Admin = () => {
                   onViewDetails={() =>
                     handleViewUserDetails({ ...student, role: "Estudiante" })
                   }
+                  onDelete={() => {
+                    handleDeleteUser(student.id);
+                  }}
                 />
               ))}
             </div>
@@ -311,6 +313,9 @@ const Admin = () => {
                   onViewDetails={() =>
                     handleViewUserDetails({ ...advisor, role: "Asesor" })
                   }
+                  onDelete={() => {
+                    handleDeleteUser(advisor.id);
+                  }}
                 />
               ))}
             </div>
