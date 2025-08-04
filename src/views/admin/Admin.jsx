@@ -82,9 +82,17 @@ const Admin = () => {
       console.log("Datos recibidos asesores:", response.asesores);
       if (response.success) {
         const asesoresFormateados = response.asesores.map((asesor) => ({
-          id: asesor.idusuario,
-          name: asesor.nombrecompletousuario,
-          email: asesor.emailusuario,
+          id: asesor.idusuario, // usa idUsuario para el id
+          name: asesor.nombrecompletousuario, // nombre completo
+          matricula: asesor.matriculaasesor, // matrícula
+          email: asesor.emailusuario, // email
+          direccion: asesor.direccionusuario || "No especificado", // fecha de nacimiento o vacío si es null
+          promedio: asesor.promedioasesor || "No especificado", // promedio
+
+          carrera: asesor.carreraasesor || "No especificado", // carrera o vacío si es null
+          group: asesor.grupoasesor || "No especificado", // grupo o vacío si es null
+
+          fechaNacimiento: asesor.fechanacimientousuario || "No especificado", // fecha de nacimiento o vacío si es null
         }));
         setAdvisors(asesoresFormateados);
       } else {
