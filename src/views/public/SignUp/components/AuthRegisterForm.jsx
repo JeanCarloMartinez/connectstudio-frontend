@@ -7,6 +7,10 @@ import { registrarAlumno } from "./../../../../services/alumno.service";
 // Importar funciones del servicio asesores
 import { registrarAsesor } from "./../../../../services/asesor.service";
 
+// Importar useState y la funcion loginUsuario del servicio de usuario
+import { useNavigate } from "react-router-dom";
+import { loginUsuario } from "../../../../services/usuario.service";
+
 const AuthRegisterForm = ({ onRegisterSuccess }) => {
   const [nombreCompletoUsuario, setNombreCompletoUsuario] = useState("");
   const [matricula, setMatricula] = useState("");
@@ -15,6 +19,9 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [tipoUsuario, setTipoUsuario] = useState("");
   const [aceptaTerminos, setAceptaTerminos] = useState(false); // ✅ NUEVO
+
+  // Crear una instancia de useNavigate para redirigir a otras rutas
+  const navigate = useNavigate();
 
   const registrarNuevaCuenta = async (e) => {
     e.preventDefault();
@@ -45,6 +52,22 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
         emailUsuario,
         passwordUsuario,
       });
+    }
+
+    // ✅ Iniciar sesión automáticamente después del registro
+    const { success, data } = await loginUsuario({
+      email: emailUsuario,
+      password: passwordUsuario,
+    });
+
+    if (success) {
+      localStorage.setItem("idusuario", JSON.stringify(data.usuario.idusuario));
+      const tipo = data.usuario.tipousuario;
+
+      if (tipo === "alumno") navigate("/alumno");
+      else if (tipo === "asesor") navigate("/asesor");
+    } else {
+      Swal.fire({ title: "Registro exitoso pero falló el inicio de sesión." });
     }
   };
 

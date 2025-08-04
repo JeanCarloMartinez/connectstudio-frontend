@@ -70,8 +70,10 @@ function Alumno() {
   };
 
   const handleGoToCourseBoard = (advisory) => {
-    setSelectedAdvisory(advisory); // Guarda el objeto completo
-    setCurrentPage("courseBoard");
+    setSelectedAdvisory(advisory); // 👈 guarda el advisory antes de cambiar de vista
+    setCurrentView("courseBoard");
+    // setSelectedAdvisory(advisory); // Guarda el objeto completo
+    // setCurrentPage("courseBoard");
   };
 
   const handleBackToMyAdvisories = () => {

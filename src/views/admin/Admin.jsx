@@ -57,8 +57,15 @@ const Admin = () => {
         const alumnosFormateados = response.alumnos.map((alumno) => ({
           id: alumno.idusuario, // usa idUsuario para el id
           name: alumno.nombrecompletousuario, // nombre completo
+          matricula: alumno.matriculaalumno, // matrícula
           email: alumno.emailusuario, // email
-          group: alumno.grupousuario || "", // grupo o vacío si es null
+          direccion: alumno.direccionusuario || "No especificado", // fecha de nacimiento o vacío si es null
+          promedio: alumno.promedioalumno || "No especificado", // promedio
+
+          carrera: alumno.carreraalumno || "No especificado", // carrera o vacío si es null
+          group: alumno.grupoalumno || "No especificado", // grupo o vacío si es null
+
+          fechaNacimiento: alumno.fechanacimientousuario || "No especificado", // fecha de nacimiento o vacío si es null
         }));
         setStudents(alumnosFormateados);
       } else {
