@@ -5,23 +5,7 @@ import Swal from "sweetalert2";
 import { mostrarAsignaturas } from "./../../../services/asignatura.service";
 
 const SubjectsPage = () => {
-  const [subjects, setSubjects] = useState([
-    {
-      id: 1,
-      name: "Física Cuántica",
-      capacity: 30,
-    },
-    {
-      id: 2,
-      name: "Literatura Contemporánea",
-      capacity: 25,
-    },
-    {
-      id: 3,
-      name: "Bases de Datos",
-      capacity: 40,
-    },
-  ]);
+  const [subjects, setSubjects] = useState([]);
 
   // Cargar asignaturas al montar el componente
   useEffect(() => {

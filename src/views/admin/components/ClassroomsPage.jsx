@@ -6,11 +6,7 @@ import { mostrarAulas } from "./../../../services/aula.service";
 
 const ClassroomsPage = () => {
   // Estado para almacenar las aulas
-  const [classrooms, setClassrooms] = useState([
-    { idAula: "A001", name: "Laboratorio de Cómputo" },
-    { idAula: "A002", name: "Aula Magna" },
-    { idAula: "A003", name: "Salón de Usos Múltiples" },
-  ]);
+  const [classrooms, setClassrooms] = useState([]);
 
   // Cargar aulas al montar el componente
   useEffect(() => {

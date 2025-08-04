@@ -5,29 +5,7 @@ import Swal from "sweetalert2";
 import { mostrarCursos } from "./../../../services/curso.service";
 
 const CoursesPage = () => {
-  const [courses, setCourses] = useState([
-    {
-      id: 1,
-      name: "Matemáticas Avanzadas",
-      description: "Curso intensivo de álgebra, cálculo y estadística",
-      advisorId: "A001",
-      advisorMatricula: "MAT12345",
-    },
-    {
-      id: 2,
-      name: "Historia Universal",
-      description: "Estudio cronológico de los principales eventos históricos",
-      advisorId: "A002",
-      advisorMatricula: "HIS67890",
-    },
-    {
-      id: 3,
-      name: "Programación Web",
-      description: "HTML, CSS, JavaScript y frameworks modernos",
-      advisorId: "A003",
-      advisorMatricula: "PRO11223",
-    },
-  ]);
+  const [courses, setCourses] = useState([]);
 
   // Ejecutar una sola vez al montar el componente
   useEffect(() => {

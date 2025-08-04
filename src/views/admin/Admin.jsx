@@ -25,6 +25,8 @@ import {
   mostrarUsuarios,
   eliminarUsuario,
 } from "./../../services/usuario.service";
+// Servicio para obtener cursos desde backend
+import { mostrarCursos } from "./../../services/curso.service";
 
 const Admin = () => {
   const [currentPage, setCurrentPage] = useState("students");
@@ -43,6 +45,8 @@ const Admin = () => {
     useState(false);
   const [userToEdit, setUserToEdit] = useState(null);
   const [userToView, setUserToView] = useState(null);
+
+  const [courses, setCourses] = useState([]);
 
   useEffect(() => {
     const fetchAlumnos = async () => {
@@ -107,6 +111,18 @@ const Admin = () => {
 
   useEffect(() => {
     fetchUsuarios();
+  }, []);
+
+  // Ejecutar una sola vez al montar el componente
+  useEffect(() => {
+    const solicitarCursos = async () => {
+      const respuesta = await mostrarCursos();
+      if (respuesta.success) {
+        setCourses(respuesta.cursos);
+      }
+    };
+
+    solicitarCursos();
   }, []);
 
   const [adminUser, setAdminUser] = useState({
@@ -379,10 +395,7 @@ const Admin = () => {
               title="Inscribir Alumno a Curso"
               description="Asigna cursos a los alumnos de forma sencilla y rápida."
             />
-            <EnrollStudentPage
-              students={students}
-              courses={["Matemáticas I", "Historia Universal", "Programación"]}
-            />
+            <EnrollStudentPage students={students} courses={courses} />
           </>
         );
 

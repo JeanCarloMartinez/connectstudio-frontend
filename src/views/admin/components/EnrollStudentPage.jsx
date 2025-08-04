@@ -7,7 +7,11 @@ const EnrollStudentPage = ({ students, courses }) => {
 
   const handleEnroll = () => {
     if (!selectedStudent || !selectedCourse) {
-      Swal.fire("Campos incompletos", "Selecciona un alumno y un curso", "warning");
+      Swal.fire(
+        "Campos incompletos",
+        "Selecciona un alumno y un curso",
+        "warning"
+      );
       return;
     }
 
@@ -21,7 +25,11 @@ const EnrollStudentPage = ({ students, courses }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         // Aquí iría la lógica real de inscripción
-        Swal.fire("Inscrito", "El alumno ha sido inscrito correctamente", "success");
+        Swal.fire(
+          "Inscrito",
+          "El alumno ha sido inscrito correctamente",
+          "success"
+        );
         setSelectedStudent("");
         setSelectedCourse("");
       }
@@ -30,7 +38,9 @@ const EnrollStudentPage = ({ students, courses }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-      <h3 className="text-2xl font-semibold text-gray-800 mb-6">Inscribir Alumno</h3>
+      <h3 className="text-2xl font-semibold text-gray-800 mb-6">
+        Inscribir Alumno
+      </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-gray-700 text-sm font-medium mb-2">
@@ -60,8 +70,8 @@ const EnrollStudentPage = ({ students, courses }) => {
           >
             <option value="">Selecciona un curso</option>
             {courses.map((course) => (
-              <option key={course} value={course}>
-                {course}
+              <option key={course.idcurso} value={course.idcurso}>
+                {course.titulocurso}
               </option>
             ))}
           </select>
