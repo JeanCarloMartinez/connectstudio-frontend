@@ -11,7 +11,7 @@ const LayoutHeader = ({ currentPage, onNavigate }) => {
     { name: "Asesorías", page: "advisories" },
     { name: "Mis Asesorías", page: "myAdvisories" }, // Nueva navegación
     { name: "Agenda", page: "agenda" },
-    { name: "Recompensas", page: "rewards" },
+    // { name: "Recompensas", page: "rewards" },
     { name: "Perfil", page: "profile" },
     // { name: "Mensajes", page: "messages" },
   ];

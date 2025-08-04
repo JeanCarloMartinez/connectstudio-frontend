@@ -114,6 +114,9 @@ const Admin = () => {
         name: usuario.nombrecompletousuario,
         email: usuario.emailusuario,
         role: usuario.tipousuario,
+
+        direccion: usuario.direccionusuario || "No especificado", // fecha de nacimiento o vacío si es null
+        fechaNacimiento: usuario.fechanacimientousuario || "No especificado", // fecha de nacimiento o vacío si es null
       }));
       setUsers(usuariosFormateados);
     } else {

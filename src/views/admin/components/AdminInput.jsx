@@ -1,15 +1,27 @@
-import React from 'react';
+import React from "react";
 
-const AdminInput = ({ label, type = 'text', placeholder, value, onChange }) => {
+const AdminInput = ({
+  label,
+  name,
+  type = "text",
+  placeholder,
+  value,
+  onChange,
+}) => {
   return (
     <div className="mb-4">
-      <label className="block text-gray-700 text-sm font-medium mb-2">
+      <label
+        htmlFor={name}
+        className="block text-gray-700 text-sm font-medium mb-2"
+      >
         {label}
       </label>
       <input
+        id={name}
+        name={name} // <-- AQUI estaba faltando
         type={type}
         placeholder={placeholder}
-        value={value}
+        value={value || ""}
         onChange={onChange}
         className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
       />

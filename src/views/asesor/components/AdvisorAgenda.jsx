@@ -8,7 +8,12 @@ import Swal from "sweetalert2";
 
 const AdvisorAgenda = () => {
   const [eventos, setEventos] = useState([
-    { id: "1", title: "Nota: Preparar material de Álgebra", date: "2025-07-24", color: "#6366f1" },
+    {
+      id: "1",
+      title: "Nota: Preparar material de Álgebra",
+      date: "2025-07-24",
+      color: "#6366f1",
+    },
   ]);
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -74,7 +79,7 @@ const AdvisorAgenda = () => {
       background: "#f3f4f6",
     });
     if (isConfirmed) {
-      setEventos(eventos.filter(ev => ev.id !== clickInfo.event.id));
+      setEventos(eventos.filter((ev) => ev.id !== clickInfo.event.id));
       Swal.fire({
         title: "Eliminada",
         text: "La nota fue eliminada del calendario.",
@@ -91,18 +96,37 @@ const AdvisorAgenda = () => {
     <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
       <button
         className="mb-4 flex items-center text-indigo-700 hover:text-indigo-900 font-semibold"
-        onClick={() => navigate("/asesor")}
+        onClick={() => {
+          navigate("/asesor");
+          window.location.reload();
+        }}
         title="Regresar"
       >
-        <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+        <svg
+          className="w-6 h-6 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
         Regresar
       </button>
       <h1 className="text-4xl font-extrabold text-indigo-700 mb-2 flex items-center">
-        <span role="img" aria-label="agenda">📚</span> Agenda Educativa del Asesor
+        <span role="img" aria-label="agenda">
+          📚
+        </span>{" "}
+        Agenda Educativa del Asesor
       </h1>
-      <p className="text-indigo-600 mb-6 text-lg">Organiza tus notas y actividades académicas fácilmente.</p>
+      <p className="text-indigo-600 mb-6 text-lg">
+        Organiza tus notas y actividades académicas fácilmente.
+      </p>
       <div className="bg-white p-6 rounded-xl shadow-lg border border-indigo-100">
         <button
           className="mb-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded shadow transition duration-200"
@@ -120,12 +144,15 @@ const AdvisorAgenda = () => {
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay"
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
           }}
           eventDisplay="block"
         />
         <div className="mt-4 text-sm text-gray-500">
-          <span className="inline-block bg-indigo-100 text-indigo-700 px-2 py-1 rounded">Haz clic en un día o usa el botón para agregar una nota educativa. Haz clic en una nota para eliminarla.</span>
+          <span className="inline-block bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
+            Haz clic en un día o usa el botón para agregar una nota educativa.
+            Haz clic en una nota para eliminarla.
+          </span>
         </div>
       </div>
     </div>

@@ -241,3 +241,60 @@ export const editarAlumno = async ({
     };
   }
 };
+
+// Funcion para editar los datos de un alumno mediante el panel de admin
+export const editarAlumno_panelAdmin = async ({
+  idUsuario,
+  nombreCompletoUsuario,
+  matricula,
+  emailUsuario,
+  fechaNacimientoUsuario,
+  direccionUsuario,
+  fotoPerfilUsuario,
+  carreraAlumno,
+  grupoAlumno,
+  promedioAlumno,
+}) => {
+  try {
+    const res = await fetch(`${BASE_URL}alumnos/${idUsuario}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        idUsuario,
+        nombreCompletoUsuario,
+        matriculaAlumno: matricula,
+        emailUsuario,
+        fechaNacimientoUsuario,
+        direccionUsuario,
+        fotoPerfilUsuario,
+        carreraAlumno,
+        grupoAlumno,
+        promedioAlumno,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      console.log("✅ ALUMNO ACTUALIZADO CON ÉXITO");
+      return {
+        success: true,
+        mensaje: data.mensaje || "Alumno actualizado correctamente",
+      };
+    } else {
+      console.log("❌ ERROR AL ACTUALIZAR ALUMNO");
+      return {
+        success: false,
+        mensaje: data.error || "Error al actualizar alumno",
+      };
+    }
+  } catch (error) {
+    console.log("❌ ERROR EN editarAlumnoAdmin: " + error.message);
+    return {
+      success: false,
+      mensaje: "Error de conexión con el servidor",
+    };
+  }
+}; // Fin de la funcion editarAlumnoAdmin
