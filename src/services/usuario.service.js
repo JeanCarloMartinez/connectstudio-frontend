@@ -1,30 +1,7 @@
 // Url base para consultas al servidor desde variable de entorno
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-export const registrarUsuario = async ({
-  nombre,
-  matricula,
-  email,
-  password,
-  tipoUsuario,
-}) => {
-  try {
-    const res = await fetch("http://localhost:3000/usuarios/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ nombre, matricula, email, password, tipoUsuario }),
-    });
-
-    const data = await res.json();
-    return { success: res.ok, mensaje: data.mensaje || data.error };
-  } catch (error) {
-    console.log("Error al registrar usuario: " + error.message);
-    return { success: false, mensaje: "Error de conexion con el servidor" };
-  }
-};
-
+// Funcion para realizar el login desde el frontend para enviar al backend
 export const loginUsuario = async ({ email, password }) => {
   try {
     const res = await fetch(`${BASE_URL}usuarios/login`, {
@@ -43,7 +20,7 @@ export const loginUsuario = async ({ email, password }) => {
   }
 };
 
-// Funcion para mostrar los usuarios
+// Funcion para solicitar los usuarios a el backend
 export const mostrarUsuarios = async () => {
   try {
     const res = await fetch(`${BASE_URL}usuarios`, {
@@ -70,7 +47,7 @@ export const mostrarUsuarios = async () => {
   }
 };
 
-// Funcion para eliminar usuario por id
+// Funcion que solicita al backend eliminar un usuario
 export const eliminarUsuario = async (idUsuario) => {
   try {
     const res = await fetch(`${BASE_URL}usuarios/eliminar${idUsuario}`, {
