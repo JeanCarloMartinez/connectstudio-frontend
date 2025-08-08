@@ -362,8 +362,8 @@ const UserProfile = () => {
                 Promedio
               </label>
               <p className="text-gray-700">
-                {alumnoData.promedioalumno !== null
-                  ? alumnoData.promedioalumno.toFixed(2)
+                {!isNaN(Number(alumnoData.promedioalumno))
+                  ? Number(alumnoData.promedioalumno).toFixed(2)
                   : "No especificado"}
               </p>
             </div>

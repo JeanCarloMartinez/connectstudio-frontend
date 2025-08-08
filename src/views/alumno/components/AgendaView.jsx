@@ -42,19 +42,18 @@ const AgendaView = () => {
         alumno.matriculaalumno
       );
       const eventosCitas = respuestaCitas.success
-        ? respuestaCitas.citas.map((cita) => ({
-            title: `${cita.titulocurso} - ${cita.nombreasignatura}`,
-            start: `${cita.fechaasesoria.split("T")[0]}T${
-              cita.horainicioasesoria
-            }`,
-            end: `${cita.fechaasesoria.split("T")[0]}T${
-              cita.horaterminoasesoria
-            }`,
-            backgroundColor: "#dbeafe",
-            borderColor: "#3b82f6",
-            textColor: "#1e3a8a",
-            extendedProps: { ...cita },
-          }))
+        ? respuestaCitas.citas.map((cita) => {
+            const fechaSolo = cita.fechaasesoria.split("T")[0];
+            return {
+              title: `${cita.titulocurso} - ${cita.nombreasignatura}`,
+              start: `${fechaSolo}T${cita.horainicioasesoria}`,
+              end: `${fechaSolo}T${cita.horaterminoasesoria}`,
+              backgroundColor: "#dbeafe",
+              borderColor: "#3b82f6",
+              textColor: "#1e3a8a",
+              extendedProps: { ...cita },
+            };
+          })
         : [];
 
       // Cargar eventos del usuario
@@ -62,19 +61,22 @@ const AgendaView = () => {
         alumno.idusuario
       );
       const eventosUsuario = respuestaEventos.success
-        ? respuestaEventos.eventos.map((evento) => ({
-            title: `📝 ${evento.tituloevento}`,
-            start: `${evento.fechaevento}T${evento.horainicioevento}`,
-            end: `${evento.fechaevento}T${evento.horaterminoevento}`,
-            backgroundColor: "#fef3c7",
-            borderColor: "#f59e0b",
-            textColor: "#78350f",
-            extendedProps: {
-              tipo: "nota",
-              descripcion: evento.descripcionevento,
-              ...evento,
-            },
-          }))
+        ? respuestaEventos.eventos.map((evento) => {
+            const fechaSolo = evento.fechaevento.split("T")[0];
+            return {
+              title: `📝 ${evento.tituloevento}`,
+              start: `${fechaSolo}T${evento.horainicioevento}`,
+              end: `${fechaSolo}T${evento.horaterminoevento}`,
+              backgroundColor: "#fef3c7",
+              borderColor: "#f59e0b",
+              textColor: "#78350f",
+              extendedProps: {
+                tipo: "nota",
+                descripcion: evento.descripcionevento,
+                ...evento,
+              },
+            };
+          })
         : [];
 
       const todosLosEventos = [...eventosCitas, ...eventosUsuario];
@@ -158,15 +160,16 @@ const AgendaView = () => {
       const respuesta = await registrarNuevoEvento(evento);
 
       if (respuesta.success) {
+        const fechaSolo = evento.fechaevento.split("T")[0];
         const nuevoEvento = {
-          title: evento.tituloevento,
-          start: `${evento.fechaevento}T${evento.horainicioevento}`,
-          end: `${evento.fechaevento}T${evento.horaterminoevento}`,
-          backgroundColor: "#dbeafe", // color para eventos normales
-          borderColor: "#3b82f6",
-          textColor: "#1e3a8a",
+          title: `📝 ${evento.tituloevento}`,
+          start: `${fechaSolo}T${evento.horainicioevento}`,
+          end: `${fechaSolo}T${evento.horaterminoevento}`,
+          backgroundColor: "#fef3c7",
+          borderColor: "#f59e0b",
+          textColor: "#78350f",
           extendedProps: {
-            tipo: "evento",
+            tipo: "nota",
             descripcion: evento.descripcionevento,
             ...evento,
           },
