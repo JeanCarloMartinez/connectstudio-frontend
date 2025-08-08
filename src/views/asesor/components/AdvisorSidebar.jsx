@@ -120,7 +120,7 @@ const AdvisorSidebar = ({ isOpen, toggleSidebar, onNavigate }) => {
                 Asesorías
               </button>
             </li> */}
-            <li>
+            {/* <li>
               <button
                 onClick={() => {
                   onNavigate("profile");
@@ -144,7 +144,7 @@ const AdvisorSidebar = ({ isOpen, toggleSidebar, onNavigate }) => {
                 </svg>
                 Perfil
               </button>
-            </li>
+            </li> */}
             <li>
               <button
                 onClick={() => {

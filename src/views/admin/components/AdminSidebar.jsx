@@ -10,7 +10,7 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
     { name: "Aulas", page: "classrooms" }, // Nuevo
     { name: "Asignaturas", page: "subjects" }, // Nuevo
     { name: "Inscribir Alumno a Curso", page: "enroll" }, // Nuevo
-    { name: "Perfil", page: "profile" },
+    // { name: "Perfil", page: "profile" },
   ];
 
   return (
