@@ -62,42 +62,6 @@ export const obtenerAsesor = async () => {
   }
 }; // Fin de la funcion obtenerAsesor
 
-// // Funcion para registrar un nuevo alumno
-// export const registrarAsesor = async ({
-//   // Indicar los parametros de la funcion
-//   nombreCompletoUsuario,
-//   matricula,
-//   emailUsuario,
-//   passwordUsuario,
-// }) => {
-//   try {
-//     // Realizar la solicitud al backend
-//     const respuesta = await fetch(`${BASE_URL}/asesores/signUp`, {
-//       // Metodo de solicitud
-//       method: "POST",
-//       // Tipo de contenido
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       // Pasar los datos a JSON
-//       body: JSON.stringify({
-//         nombreCompletoUsuario,
-//         matricula,
-//         emailUsuario,
-//         passwordUsuario,
-//       }),
-//     });
-
-//     if (respuesta.ok) {
-//       // Mostrar un mensaje en caso de exito
-//       console.log("✅ NUEVO ASESOR REGISTRADO CON EXITO");
-//     }
-//   } catch (error) {
-//     // Mostrar un mensaje en caso de error
-//     console.log("❌ ERROR AL REGISTRAR AL NUEVO ASESOR" + error.message);
-//   }
-// }; // Fin de la funcion registrarAlumno
-
 // Función para registrar un nuevo asesor
 export const registrarAsesor = async ({
   nombreCompletoUsuario,

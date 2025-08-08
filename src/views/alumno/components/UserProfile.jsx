@@ -7,61 +7,116 @@ import { subirImagenPerfil } from "../../../services/usuario.service";
 
 const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [nombreCompletoUsuario, setNombreCompletoUsuario] = useState(
-    "Estudiante de Connect Studio"
-  );
-  const [emailUsuario, setEmailUsuario] = useState("");
-  const [telefonoUsuario, setTelefonoUsuario] = useState("");
-  const [direccionUsuario, setDireccionUsuario] = useState("");
-  const [fechaNacimientoUsuario, setFechaNacimientoUsuario] = useState("");
-  const [matriculaAlumno, setMatriculaAlumno] = useState("");
-  const [nombreCarrera, setNombreCarrera] = useState("");
-  const [promedioAlumno, setPromedioAlumno] = useState(null);
-  const [grupoAlumno, setGrupoAlumno] = useState("");
-  const [profileImage, setProfileImage] = useState(null); // para preview
-  const [profileImageUrl, setProfileImageUrl] = useState(null); // url real subida
+  const [formData, setFormData] = useState({
+    nombrecompletousuario: "",
+    emailusuario: "",
+    telefonousuario: "",
+    direccionusuario: "",
+    fechanacimientousuario: "",
+    fotoperfilusuario: "",
+  });
+  const [alumnoData, setAlumnoData] = useState({
+    matriculaalumno: "",
+    carreraalumno: "",
+    promedioalumno: null,
+    grupoalumno: "",
+  });
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const solicitarDatosAlumno = async () => {
-      const respuesta = await obtenerAlumno();
-      if (respuesta.success) {
-        const alumno = respuesta.alumno;
-        setNombreCompletoUsuario(alumno.nombrecompletousuario || "");
-        setEmailUsuario(alumno.emailusuario || "");
-        setTelefonoUsuario(alumno.telefonousuario || "");
-        setDireccionUsuario(alumno.direccionusuario || "");
-        setFechaNacimientoUsuario(alumno.fechanacimientousuario || "");
-        setMatriculaAlumno(alumno.matriculaalumno || "");
-        setNombreCarrera(alumno.carreraalumno || "");
-        setPromedioAlumno(alumno.promedioalumno || null);
-        setGrupoAlumno(alumno.grupoalumno || "");
-        setProfileImage(alumno.fotoperfilusuario);
-        setProfileImageUrl(alumno.fotoperfilusuario);
+    const cargarDatosAlumno = async () => {
+      try {
+        const respuesta = await obtenerAlumno();
+        if (respuesta.success) {
+          const { alumno } = respuesta;
+
+          setFormData({
+            nombrecompletousuario: alumno.nombrecompletousuario || "",
+            emailusuario: alumno.emailusuario || "",
+            telefonousuario: alumno.telefonousuario || "",
+            direccionusuario: alumno.direccionusuario || "",
+            fechanacimientousuario: alumno.fechanacimientousuario || "",
+            fotoperfilusuario: alumno.fotoperfilusuario || "",
+          });
+
+          setAlumnoData({
+            matriculaalumno: alumno.matriculaalumno || "",
+            carreraalumno: alumno.carreraalumno || "",
+            promedioalumno: alumno.promedioalumno || null,
+            grupoalumno: alumno.grupoalumno || "",
+          });
+
+          setProfileImage(alumno.fotoperfilusuario);
+          setProfileImageUrl(alumno.fotoperfilusuario);
+        }
+      } catch (error) {
+        console.error("Error al cargar datos del alumno:", error);
       }
     };
-    solicitarDatosAlumno();
+
+    cargarDatosAlumno();
   }, []);
 
-  const editarDatosAlumno = async () => {
-    const idUsuario = localStorage.getItem("idUsuario");
+  const validateForm = () => {
+    const newErrors = {};
 
-    const datosActualizados = {
-      nombrecompletousuario: nombreCompletoUsuario,
-      emailusuario: emailUsuario,
-      telefonousuario: telefonoUsuario,
-      direccionusuario: direccionUsuario,
-      fechanacimientousuario: fechaNacimientoUsuario,
-      fotoperfilusuario: profileImageUrl,
-    };
+    if (!formData.emailusuario) {
+      newErrors.emailusuario = "El correo electrónico es obligatorio";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.emailusuario)) {
+      newErrors.emailusuario = "Ingrese un correo electrónico válido";
+    }
 
-    const resultado = await editarAlumno(idUsuario, datosActualizados);
+    if (!formData.nombrecompletousuario) {
+      newErrors.nombrecompletousuario = "El nombre completo es obligatorio";
+    }
 
-    if (resultado.success) {
-      alert("Perfil actualizado con éxito!");
-      setIsEditing(false);
-      setProfileImage(profileImageUrl);
-    } else {
-      alert("Error al actualizar el perfil.");
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleDateChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      fechanacimientousuario: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const idUsuario = localStorage.getItem("idusuario");
+      const resultado = await editarAlumno(idUsuario, {
+        ...formData,
+        fotoperfilusuario: profileImageUrl || formData.fotoperfilusuario,
+      });
+
+      if (resultado.success) {
+        alert("Perfil actualizado con éxito!");
+        setIsEditing(false);
+        setProfileImage(profileImageUrl || formData.fotoperfilusuario);
+      } else {
+        alert(resultado.mensaje || "Error al actualizar el perfil");
+      }
+    } catch (error) {
+      console.error("Error al actualizar perfil:", error);
+      alert("Ocurrió un error al actualizar el perfil");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -69,7 +124,13 @@ const UserProfile = () => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
 
-      // Mostrar preview local mientras sube
+      // Validación frontend de la imagen
+      if (file.size > 5 * 1024 * 1024) {
+        alert("La imagen no debe exceder los 5MB");
+        return;
+      }
+
+      // Preview local
       const reader = new FileReader();
       reader.onload = (event) => {
         setProfileImage(event.target.result);
@@ -78,36 +139,30 @@ const UserProfile = () => {
 
       try {
         const respuesta = await subirImagenPerfil(file);
-        console.log("Respuesta subida imagen:", respuesta);
 
-        const url = respuesta?.urlImagen;
-
-        if (respuesta.success && url) {
-          setProfileImageUrl(url);
-
-          const idUsuario = localStorage.getItem("idUsuario");
-          const resultado = await editarAlumno({
-            idUsuario,
-            fotoperfilusuario: url,
-          });
-
-          if (resultado.success) {
-            setProfileImage(url);
-            alert("Foto de perfil actualizada con éxito");
-          } else {
-            alert("Error al actualizar la foto de perfil");
-          }
+        if (respuesta.success && respuesta.urlImagen) {
+          setProfileImageUrl(respuesta.urlImagen);
+          // No actualizamos todo el perfil aquí, solo guardamos la URL para el submit
         } else {
-          alert(
-            "No se pudo subir la imagen. " +
-              (respuesta?.mensaje || "Respuesta inválida del servidor")
-          );
+          alert(respuesta.mensaje || "Error al subir la imagen");
+          setProfileImage(profileImageUrl); // Revertir a la imagen anterior
         }
       } catch (error) {
-        console.error("Error en handleImageChange:", error);
-        alert("Error inesperado al subir la imagen.");
+        console.error("Error al subir imagen:", error);
+        alert("Error al subir la imagen");
+        setProfileImage(profileImageUrl); // Revertir a la imagen anterior
       }
     }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "No especificado";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
   return (
@@ -118,6 +173,7 @@ const UserProfile = () => {
           <button
             onClick={() => setIsEditing(!isEditing)}
             className="px-5 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition-colors font-semibold"
+            disabled={isSubmitting}
           >
             {isEditing ? "Cancelar" : "Editar Perfil"}
           </button>
@@ -172,150 +228,194 @@ const UserProfile = () => {
                   accept="image/*"
                   className="hidden"
                   onChange={handleImageChange}
+                  disabled={isSubmitting}
                 />
               </label>
             )}
           </div>
           {isEditing ? (
-            <input
-              type="text"
-              value={nombreCompletoUsuario}
-              onChange={(e) => setNombreCompletoUsuario(e.target.value)}
-              className="text-2xl font-semibold text-gray-800 text-center w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-            />
+            <div className="w-full">
+              <input
+                type="text"
+                name="nombrecompletousuario"
+                value={formData.nombrecompletousuario}
+                onChange={handleInputChange}
+                className={`text-2xl font-semibold text-gray-800 text-center w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 transition ${
+                  errors.nombrecompletousuario
+                    ? "border-red-500 focus:ring-red-200"
+                    : "border-gray-300 focus:ring-indigo-500"
+                }`}
+                placeholder="Nombre completo"
+              />
+              {errors.nombrecompletousuario && (
+                <p className="text-red-500 text-sm mt-1 text-center">
+                  {errors.nombrecompletousuario}
+                </p>
+              )}
+            </div>
           ) : (
             <h3 className="text-2xl font-semibold text-gray-800">
-              {nombreCompletoUsuario}
+              {formData.nombrecompletousuario || "Estudiante de Connect Studio"}
             </h3>
           )}
         </div>
 
-        <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Correo electrónico
-            </label>
-            {isEditing ? (
-              <input
-                type="email"
-                value={emailUsuario}
-                onChange={(e) => setEmailUsuario(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            ) : (
+        <form onSubmit={handleSubmit}>
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Email */}
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1">
+                Correo electrónico *
+              </label>
+              {isEditing ? (
+                <div>
+                  <input
+                    type="email"
+                    name="emailusuario"
+                    value={formData.emailusuario}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 ${
+                      errors.emailusuario
+                        ? "border-red-500 focus:ring-red-200"
+                        : "border-gray-300 focus:ring-indigo-500"
+                    }`}
+                    placeholder="ejemplo@correo.com"
+                  />
+                  {errors.emailusuario && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.emailusuario}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-gray-700">
+                  {formData.emailusuario || "No especificado"}
+                </p>
+              )}
+            </div>
+
+            {/* Teléfono */}
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1">
+                Teléfono
+              </label>
+              {isEditing ? (
+                <input
+                  type="tel"
+                  name="telefonousuario"
+                  value={formData.telefonousuario}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="+52 123 456 7890"
+                />
+              ) : (
+                <p className="text-gray-700">
+                  {formData.telefonousuario || "No especificado"}
+                </p>
+              )}
+            </div>
+
+            {/* Dirección */}
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1">
+                Dirección
+              </label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="direccionusuario"
+                  value={formData.direccionusuario}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Calle, número, colonia"
+                />
+              ) : (
+                <p className="text-gray-700">
+                  {formData.direccionusuario || "No especificado"}
+                </p>
+              )}
+            </div>
+
+            {/* Matrícula */}
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1">
+                Matrícula
+              </label>
               <p className="text-gray-700">
-                {emailUsuario || "No especificado"}
+                {alumnoData.matriculaalumno || "No especificado"}
               </p>
-            )}
-          </div>
+            </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Teléfono
-            </label>
-            {isEditing ? (
-              <input
-                type="tel"
-                value={telefonoUsuario}
-                onChange={(e) => setTelefonoUsuario(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            ) : (
+            {/* Carrera */}
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1">
+                Carrera
+              </label>
               <p className="text-gray-700">
-                {telefonoUsuario || "No especificado"}
+                {alumnoData.carreraalumno || "No especificado"}
               </p>
-            )}
-          </div>
+            </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Dirección
-            </label>
-            {isEditing ? (
-              <input
-                type="text"
-                value={direccionUsuario}
-                onChange={(e) => setDireccionUsuario(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            ) : (
+            {/* Promedio */}
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1">
+                Promedio
+              </label>
               <p className="text-gray-700">
-                {direccionUsuario || "No especificado"}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Matrícula
-            </label>
-            <p className="text-gray-700">
-              {matriculaAlumno || "No especificado"}
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Carrera
-            </label>
-            <p className="text-gray-700">
-              {nombreCarrera || "No especificado"}
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Promedio
-            </label>
-            <p className="text-gray-700">
-              {promedioAlumno !== null
-                ? promedioAlumno.toFixed(2)
-                : "No especificado"}
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Grupo
-            </label>
-            <p className="text-gray-700">{grupoAlumno || "No especificado"}</p>
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Fecha de nacimiento
-            </label>
-            {isEditing ? (
-              <input
-                type="date"
-                value={
-                  fechaNacimientoUsuario
-                    ? new Date(fechaNacimientoUsuario)
-                        .toISOString()
-                        .slice(0, 10)
-                    : ""
-                }
-                onChange={(e) => setFechaNacimientoUsuario(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            ) : (
-              <p className="text-gray-700">
-                {fechaNacimientoUsuario
-                  ? new Date(fechaNacimientoUsuario).toLocaleDateString()
+                {alumnoData.promedioalumno !== null
+                  ? alumnoData.promedioalumno.toFixed(2)
                   : "No especificado"}
               </p>
-            )}
-          </div>
-        </div>
+            </div>
 
-        {isEditing && (
-          <button
-            onClick={editarDatosAlumno}
-            className="w-full bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition-colors font-semibold mt-6"
-          >
-            Guardar Cambios
-          </button>
-        )}
+            {/* Grupo */}
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1">
+                Grupo
+              </label>
+              <p className="text-gray-700">
+                {alumnoData.grupoalumno || "No especificado"}
+              </p>
+            </div>
+
+            {/* Fecha de nacimiento */}
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1">
+                Fecha de nacimiento
+              </label>
+              {isEditing ? (
+                <input
+                  type="date"
+                  name="fechanacimientousuario"
+                  value={
+                    formData.fechanacimientousuario
+                      ? new Date(formData.fechanacimientousuario)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={handleDateChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  max={new Date().toISOString().split("T")[0]}
+                />
+              ) : (
+                <p className="text-gray-700">
+                  {formatDate(formData.fechanacimientousuario)}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {isEditing && (
+            <button
+              type="submit"
+              className="w-full bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition-colors font-semibold mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting || Object.keys(errors).length > 0}
+            >
+              {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+            </button>
+          )}
+        </form>
       </div>
     </div>
   );

@@ -64,32 +64,6 @@ export const mostrarInscripcionesPorMatriculaAlumno = async (
   }
 }; // Fin de la funcion mostrarInscripcionesPorMatriculaAlumno
 
-// // Mostrar inscripciones por matrícula (opcional)
-// export const mostrarInscripcionesPorMatricula = async (matricula) => {
-//   try {
-//     const res = await fetch(`${BASE_URL}/inscripciones/${matricula}`, {
-//       method: "GET",
-//       headers: { "Content-Type": "application/json" },
-//     });
-//     const data = await res.json();
-//     return {
-//       success: res.ok,
-//       inscripciones: data.inscripciones || [],
-//       mensaje: data.mensaje || data.error,
-//     };
-//   } catch (error) {
-//     console.error(
-//       "Error al mostrar inscripciones por matrícula:",
-//       error.message
-//     );
-//     return {
-//       success: false,
-//       inscripciones: [],
-//       mensaje: "Error de conexión con el servidor",
-//     };
-//   }
-// };
-
 // Registrar inscripción
 export const registrarInscripcion = async (inscripcion) => {
   try {

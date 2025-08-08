@@ -67,42 +67,6 @@ export const obtenerAlumno = async () => {
   }
 }; // Fin de la funcion obtenerAlumno
 
-// // Funcion para registrar un nuevo alumno
-// export const registrarAlumno = async ({
-//   // Indicar los parametros de la funcion
-//   nombreCompletoUsuario,
-//   matricula,
-//   emailUsuario,
-//   passwordUsuario,
-// }) => {
-//   try {
-//     // Realizar la solicitud al backend
-//     const respuesta = await fetch(`${BASE_URL}/alumnos/signUp`, {
-//       // Metodo de solicitud
-//       method: "POST",
-//       // Tipo de contenido
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       // Pasar los datos a JSON
-//       body: JSON.stringify({
-//         nombreCompletoUsuario,
-//         matricula,
-//         emailUsuario,
-//         passwordUsuario,
-//       }),
-//     });
-
-//     if (respuesta.ok) {
-//       // Mostrar un mensaje en caso de exito
-//       console.log("✅ NUEVO ALUMNO REGISTRADO CON EXITO");
-//     }
-//   } catch (error) {
-//     // Mostrar un mensaje en caso de error
-//     console.log("❌ ERROR AL REGISTRAR AL NUEVO ALUMNO" + error.message);
-//   }
-// }; // Fin de la funcion registrarAlumno
-
 // Función para registrar un nuevo alumno
 export const registrarAlumno = async ({
   nombreCompletoUsuario,
@@ -138,42 +102,6 @@ export const registrarAlumno = async ({
     };
   }
 };
-
-// // Funcion para registrar un nuevo alumno
-// export const registrarAlumno = async ({
-//   // Indicar los parametros de la funcion
-//   nombreCompletoUsuario,
-//   matricula,
-//   emailUsuario,
-//   passwordUsuario,
-// }) => {
-//   try {
-//     // Realizar la solicitud al backend
-//     const respuesta = await fetch(`${BASE_URL}/alumnos/signUp`, {
-//       // Metodo de solicitud
-//       method: "POST",
-//       // Tipo de contenido
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       // Pasar los datos a JSON
-//       body: JSON.stringify({
-//         nombreCompletoUsuario,
-//         matricula,
-//         emailUsuario,
-//         passwordUsuario,
-//       }),
-//     });
-
-//     if (respuesta.ok) {
-//       // Mostrar un mensaje en caso de exito
-//       console.log("✅ NUEVO ALUMNO REGISTRADO CON EXITO");
-//     }
-//   } catch (error) {
-//     // Mostrar un mensaje en caso de error
-//     console.log("❌ ERROR AL REGISTRAR AL NUEVO ALUMNO" + error.message);
-//   }
-// }; // Fin de la funcion registrarAlumno
 
 // Función para registrar un nuevo alumno
 export const registrarNuevoAlumno = async ({
@@ -211,103 +139,50 @@ export const registrarNuevoAlumno = async ({
   }
 };
 
-// // funcion para editar los datos de un alumno mediante idUsuario
-// export const editarAlumno = async ({
-//   // Parámetros que se enviarán para la actualización
-//   idUsuario,
-//   nombreCompletoUsuario,
-//   matricula,
-//   emailUsuario,
-//   fechaNacimientoUsuario,
-//   direccionUsuario,
-//   passwordUsuario,
-// }) => {
-//   try {
-//     // Realizar la solicitud PUT al backend con el idUsuario en la URL
-//     const respuesta = await fetch(`${BASE_URL}/alumnos/${idUsuario}`, {
-//       method: "PUT", // Método para actualizar recursos
-//       headers: {
-//         "Content-Type": "application/json", // Indicar que se envía JSON
-//       },
-//       // Convertir los datos en formato JSON para enviarlos en el body
-//       body: JSON.stringify({
-//         nombreCompletoUsuario,
-//         matricula,
-//         emailUsuario,
-//         fechaNacimientoUsuario,
-//         direccionUsuario,
-//         passwordUsuario,
-//       }),
-//     });
-
-//     // Validar si la respuesta fue exitosa
-//     if (respuesta.ok) {
-//       // Mostrar mensaje en caso de éxito
-//       console.log("✅ ALUMNO ACTUALIZADO CON ÉXITO");
-//       return { success: true };
-//     } else {
-//       // Mostrar mensaje en caso de error en la actualización
-//       console.log("❌ ERROR AL ACTUALIZAR ALUMNO");
-//       return { success: false };
-//     }
-//   } catch (error) {
-//     // Capturar y mostrar cualquier error ocurrido durante la petición
-//     console.log("❌ ERROR EN editarAlumno: " + error.message);
-//     return { success: false };
-//   }
-// }; // Fin de la funcion editarAlumno
-export const editarAlumno = async ({
-  nombreCompletoUsuario,
-  matricula,
-  emailUsuario,
-  fechaNacimientoUsuario,
-  direccionUsuario,
-  fotoPerfilUsuario,
-  carreraAlumno,
-  grupoAlumno,
-  promedioAlumno,
-}) => {
+export const editarAlumno = async (idUsuario, datosActualizados) => {
   try {
-    // Obtener el idUsuario del localStorage
-    const idUsuario = localStorage.getItem("idusuario");
+    // Validación frontend
+    if (!datosActualizados.emailusuario) {
+      return {
+        success: false,
+        mensaje: "El correo electrónico es obligatorio",
+        error: "EMAIL_REQUIRED",
+      };
+    }
+
     const res = await fetch(`${BASE_URL}alumnos/${idUsuario}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
-      body: JSON.stringify({
-        nombreCompletoUsuario,
-        matricula,
-        emailUsuario,
-        fechaNacimientoUsuario,
-        direccionUsuario,
-        fotoPerfilUsuario,
-        carreraAlumno,
-        grupoAlumno,
-        promedioAlumno,
-      }),
+      body: JSON.stringify(datosActualizados),
     });
 
     const data = await res.json();
 
-    if (res.ok) {
-      console.log("✅ ALUMNO ACTUALIZADO CON ÉXITO");
-      return {
-        success: true,
-        mensaje: data.mensaje || "Alumno actualizado correctamente",
-      };
-    } else {
-      console.log("❌ ERROR AL ACTUALIZAR ALUMNO");
+    if (!res.ok) {
+      console.error("Error del backend:", data);
       return {
         success: false,
         mensaje: data.error || "Error al actualizar alumno",
+        error: data.error,
+        status: res.status,
       };
     }
+
+    return {
+      success: true,
+      mensaje: data.mensaje || "Alumno actualizado correctamente",
+      data: data.data,
+    };
   } catch (error) {
-    console.log("❌ ERROR EN editarAlumno: " + error.message);
+    console.error("Error de conexión:", error);
     return {
       success: false,
       mensaje: "Error de conexión con el servidor",
+      error: error.message,
+      status: 500,
     };
   }
 };
