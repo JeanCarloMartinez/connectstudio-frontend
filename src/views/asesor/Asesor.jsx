@@ -52,9 +52,9 @@ function Asesor() {
   const renderPage = () => {
     switch (currentPage) {
       case "welcome":
-        return <AdvisorWelcome />;
+        return <AdvisorWelcome onNavigate={navigateTo} />; // ✅ aquí
       case "dashboard":
-        return <AdvisorDashboard />;
+        return <AdvisorDashboard onNavigate={navigateTo} />;
       case "courses":
         return <AdvisorCourses />;
       case "advisories":
@@ -64,7 +64,7 @@ function Asesor() {
       case "agenda":
         return <AdvisorAgenda onNavigate={navigateTo} />;
       default:
-        return <AdvisorWelcome />;
+        return <AdvisorWelcome onNavigate={navigateTo} />; // ✅ también aquí
     }
   };
 
