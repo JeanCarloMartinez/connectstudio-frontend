@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { mostrarInscripcionesPorMatriculaAlumno } from "./../../../services/inscripcion.service";
 // Importar funciones del servicio alumno
 import { obtenerAlumno } from "./../../../services/alumno.service";
+// Importar funciones dle servicio materiales
+import { mostrarMaterialesPorCurso } from "./../../../services/material.service";
 
 const MyAdvisoriesList = ({ onNavigate, onGoToCourseBoard }) => {
   // Declarar variables useState similar a getters y setters
@@ -38,7 +40,7 @@ const MyAdvisoriesList = ({ onNavigate, onGoToCourseBoard }) => {
         const InscripcionesFormateadas = respuesta.inscripciones.map(
           (inscripcion, index) => {
             return {
-              id: index,
+              id: inscripcion.idcurso,
               name: inscripcion.nombrecompletousuario || "Asesor sin nombre",
               subject: inscripcion.nombreasignatura || "Asignatura desconocida",
               date: inscripcion.fechaasesoria || "Sin fecha",

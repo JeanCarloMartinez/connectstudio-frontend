@@ -17,7 +17,10 @@ const AdvisorWelcome = ({ onNavigate }) => {
         >
           Ver Dashboard
         </button>
-        <button className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg shadow-md hover:bg-gray-300 transition-colors duration-200">
+        <button
+          className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg shadow-md hover:bg-gray-300 transition-colors duration-200"
+          onClick={() => onNavigate("courses")}
+        >
           Crear Curso
         </button>
       </div>

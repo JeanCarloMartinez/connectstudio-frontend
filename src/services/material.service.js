@@ -91,7 +91,7 @@ export const subirMaterialPdf = async ({ file, tituloMaterial, idCurso }) => {
     formData.append("tituloMaterial", tituloMaterial);
     formData.append("idCurso", idCurso);
 
-    const res = await fetch(`${BASE_URL}materiales/subir`, {
+    const res = await fetch(`${BASE_URL}materiales/subir-pdf`, {
       method: "POST",
       body: formData,
     });

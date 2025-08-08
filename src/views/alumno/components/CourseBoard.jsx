@@ -1,7 +1,42 @@
 import React, { useState } from "react";
+import { mostrarMaterialesPorCurso } from "./../../../services/material.service";
+import { mostrarAnunciosPorCurso } from "./../../../services/anuncio.service";
+import { useEffect } from "react"; // Asegúrate de importar useEffect si no lo has hecho
 
 const CourseBoard = ({ advisory, onBackToMyAdvisories }) => {
+  // Estado para materiales
+  const [materiales, setMateriales] = useState([]);
+
+  // Estado para anuncios
+  const [anuncios, setAnuncios] = useState([]);
+
   console.log("Advisory recibido en CourseBoard:", advisory);
+  useEffect(() => {
+    if (advisory?.idcourse) {
+      mostrarMaterialesPorCurso(advisory.idcourse)
+        .then((data) => {
+          console.log("📦 Materiales obtenidos del backend:", data);
+          setMateriales(data.materiales);
+        })
+        .catch((err) => {
+          console.error("❌ Error al obtener materiales:", err);
+        });
+    }
+
+    if (advisory?.idcourse) {
+      mostrarAnunciosPorCurso(advisory.idcourse)
+        .then((data) => {
+          console.log("📦 Anuncios obtenidos del backend:", data);
+          setAnuncios(data.anuncios);
+        })
+        .catch((err) => {
+          console.error("❌ Error al obtener anuncios:", err);
+        });
+    }
+  }, [advisory?.idcourse]);
+
+  console.log("materiales", materiales);
+  console.log("anuncios", anuncios);
 
   // Mock data para el tablón del curso
   const mockCourseData = {
@@ -117,13 +152,13 @@ const CourseBoard = ({ advisory, onBackToMyAdvisories }) => {
   const course = mockCourseData[courseId];
   const [newDiscussionComment, setNewDiscussionComment] = useState("");
 
-  if (!course) {
-    return (
-      <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
-        <p className="text-gray-600 text-lg">Curso no encontrado.</p>
-      </div>
-    );
-  }
+  // if (!course) {
+  //   return (
+  //     <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+  //       <p className="text-gray-600 text-lg">Curso no encontrado.</p>
+  //     </div>
+  //   );
+  // }
 
   const handleAddComment = () => {
     if (newDiscussionComment.trim()) {
@@ -176,9 +211,9 @@ const CourseBoard = ({ advisory, onBackToMyAdvisories }) => {
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">
             Materiales del Curso
           </h3>
-          {course.materials.length > 0 ? (
+          {materiales.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {course.materials.map((material) => (
+              {/* {course.materials.map((material) => (
                 <a
                   key={material.id}
                   href={material.url}
@@ -214,6 +249,44 @@ const CourseBoard = ({ advisory, onBackToMyAdvisories }) => {
                     {material.name}
                   </span>
                 </a>
+              ))} */}
+
+              {materiales.map((material, index) => (
+                <a
+                  key={material.idmaterial}
+                  href={material.rutamaterial}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center p-4 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors border border-gray-200"
+                >
+                  <svg
+                    className="w-6 h-6 mr-3 text-indigo-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    {/* {material.type === "PDF" && ( */}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    ></path>
+                    {/* )}
+                    {material.type === "Video" && (
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      ></path>
+                    )} */}
+                  </svg>
+                  <span className="font-medium text-gray-800">
+                    {material.titulomaterial}
+                  </span>
+                </a>
               ))}
             </div>
           ) : (
@@ -226,18 +299,18 @@ const CourseBoard = ({ advisory, onBackToMyAdvisories }) => {
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">
             Anuncios
           </h3>
-          {course.announcements.length > 0 ? (
+          {anuncios.length > 0 ? (
             <div className="space-y-4">
-              {course.announcements.map((announcement) => (
+              {anuncios.map((anuncio) => (
                 <div
-                  key={announcement.id}
+                  key={anuncio.idanuncio}
                   className="p-4 bg-yellow-50 rounded-xl border border-yellow-200"
                 >
                   <h4 className="font-semibold text-gray-800 mb-1">
-                    {announcement.title}
+                    {anuncio.tituloanuncio}
                   </h4>
                   <p className="text-gray-700 text-sm">
-                    {announcement.content}
+                    {anuncio.contenidoanuncio}
                   </p>
                 </div>
               ))}
@@ -248,7 +321,7 @@ const CourseBoard = ({ advisory, onBackToMyAdvisories }) => {
         </div>
 
         {/* Sección de Discusión */}
-        <div>
+        {/* <div>
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">
             Tablón de Discusión
           </h3>
@@ -284,7 +357,7 @@ const CourseBoard = ({ advisory, onBackToMyAdvisories }) => {
               Comentar
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
