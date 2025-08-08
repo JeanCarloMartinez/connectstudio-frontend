@@ -1,11 +1,12 @@
 const Testimonio = ({ titulo, descipcion, nombre, imagen }) => {
   // Renderizar el componente Testimonio
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-lg border border-blue-100 transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+    <div className="bg-white p-8 rounded-2xl shadow-lg border border-blue-100 transform transition-transform duration-300 hover:scale-105 hover:shadow-xl flex flex-col justify-between h-full">
       <p className="text-lg text-blue-800 mb-6 italic leading-relaxed">
         "{descipcion}"
       </p>
-      <div className="flex items-center">
+
+      <div className="flex items-center mt-auto">
         <img
           src={imagen}
           alt={nombre}

@@ -1,13 +1,11 @@
-// Importar useState y useEffect
 import { useState, useEffect } from "react";
-// Importar funciones del servicio alumno
 import {
   obtenerAlumno,
   editarAlumno,
 } from "./../../../services/alumno.service";
+import { subirImagenPerfil } from "../../../services/usuario.service";
 
-const UserProfile = ({}) => {
-  // Declarar variables useState similar a getters y setters
+const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [nombreCompletoUsuario, setNombreCompletoUsuario] = useState(
     "Estudiante de Connect Studio"
@@ -20,20 +18,14 @@ const UserProfile = ({}) => {
   const [nombreCarrera, setNombreCarrera] = useState("");
   const [promedioAlumno, setPromedioAlumno] = useState(null);
   const [grupoAlumno, setGrupoAlumno] = useState("");
+  const [profileImage, setProfileImage] = useState(null); // para preview
+  const [profileImageUrl, setProfileImageUrl] = useState(null); // url real subida
 
-  const [profileImage, setProfileImage] = useState(null); // Estado para la imagen de perfil
-
-  // Al cargar la pagina por primera vez, se ejecuta esta funcion
   useEffect(() => {
-    // Funcion que solicita los datos del alumno al servidor
     const solicitarDatosAlumno = async () => {
-      // Obtener dinamicamente los datos del alumno
       const respuesta = await obtenerAlumno();
-      console.log(respuesta.alumno);
-      // Guardar los datos del alumno en una variable
-      const alumno = respuesta.alumno;
-      // Validar si la respuesta fue exitosa
       if (respuesta.success) {
+        const alumno = respuesta.alumno;
         setNombreCompletoUsuario(alumno.nombrecompletousuario || "");
         setEmailUsuario(alumno.emailusuario || "");
         setTelefonoUsuario(alumno.telefonousuario || "");
@@ -44,58 +36,77 @@ const UserProfile = ({}) => {
         setPromedioAlumno(alumno.promedioalumno || null);
         setGrupoAlumno(alumno.grupoalumno || "");
         setProfileImage(alumno.fotoperfilusuario);
+        setProfileImageUrl(alumno.fotoperfilusuario);
       }
-    }; // Fin de la funcion solicitarDatosAlumno
-
-    // setProfileImage(
-    //   "https://res.cloudinary.com/diwlilhyq/image/upload/v1754181124/WhatsApp_Image_2025-08-02_at_6.13.30_PM_hbbjwo.jpg"
-    // );
-
-    // Ejecutar la funcion solicitarDatosAlumno
+    };
     solicitarDatosAlumno();
   }, []);
 
-  // Funcion que edita los datos del alumno
   const editarDatosAlumno = async () => {
     const idUsuario = localStorage.getItem("idUsuario");
 
     const datosActualizados = {
-      idUsuario,
-      nombreCompletoUsuario,
-      emailUsuario,
-      telefonoUsuario,
-      direccionUsuario,
-      fechaNacimientoUsuario,
+      nombrecompletousuario: nombreCompletoUsuario,
+      emailusuario: emailUsuario,
+      telefonousuario: telefonoUsuario,
+      direccionusuario: direccionUsuario,
+      fechanacimientousuario: fechaNacimientoUsuario,
+      fotoperfilusuario: profileImageUrl,
     };
 
-    const resultado = await editarAlumno(datosActualizados);
+    const resultado = await editarAlumno(idUsuario, datosActualizados);
 
     if (resultado.success) {
       alert("Perfil actualizado con éxito!");
       setIsEditing(false);
+      setProfileImage(profileImageUrl);
     } else {
       alert("Error al actualizar el perfil.");
     }
   };
 
-  const addSubject = () => {
-    if (newSubject && !subjects.includes(newSubject)) {
-      setSubjects([...subjects, newSubject]);
-      setNewSubject("");
-    }
-  };
-
-  const removeSubject = (subjectToRemove) => {
-    setSubjects(subjects.filter((subject) => subject !== subjectToRemove));
-  };
-
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Mostrar preview local mientras sube
       const reader = new FileReader();
       reader.onload = (event) => {
         setProfileImage(event.target.result);
       };
-      reader.readAsDataURL(e.target.files[0]);
+      reader.readAsDataURL(file);
+
+      try {
+        const respuesta = await subirImagenPerfil(file);
+        console.log("Respuesta subida imagen:", respuesta);
+
+        const url = respuesta?.urlImagen;
+
+        if (respuesta.success && url) {
+          setProfileImageUrl(url);
+
+          const idUsuario = localStorage.getItem("idUsuario");
+          const resultado = await editarAlumno({
+            idUsuario,
+            fotoperfilusuario: url,
+          });
+
+          if (resultado.success) {
+            setProfileImage(url);
+            alert("Foto de perfil actualizada con éxito");
+          } else {
+            alert("Error al actualizar la foto de perfil");
+          }
+        } else {
+          alert(
+            "No se pudo subir la imagen. " +
+              (respuesta?.mensaje || "Respuesta inválida del servidor")
+          );
+        }
+      } catch (error) {
+        console.error("Error en handleImageChange:", error);
+        alert("Error inesperado al subir la imagen.");
+      }
     }
   };
 
@@ -179,9 +190,7 @@ const UserProfile = ({}) => {
           )}
         </div>
 
-        {/* Información adicional del perfil */}
         <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Correo electrónico */}
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Correo electrónico
@@ -200,7 +209,6 @@ const UserProfile = ({}) => {
             )}
           </div>
 
-          {/* Teléfono */}
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Teléfono
@@ -219,7 +227,6 @@ const UserProfile = ({}) => {
             )}
           </div>
 
-          {/* Dirección */}
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Dirección
@@ -238,7 +245,6 @@ const UserProfile = ({}) => {
             )}
           </div>
 
-          {/* Matrícula */}
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Matrícula
@@ -248,7 +254,6 @@ const UserProfile = ({}) => {
             </p>
           </div>
 
-          {/* Carrera */}
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Carrera
@@ -258,7 +263,6 @@ const UserProfile = ({}) => {
             </p>
           </div>
 
-          {/* Promedio */}
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Promedio
@@ -270,7 +274,6 @@ const UserProfile = ({}) => {
             </p>
           </div>
 
-          {/* Grupo */}
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Grupo
@@ -278,7 +281,6 @@ const UserProfile = ({}) => {
             <p className="text-gray-700">{grupoAlumno || "No especificado"}</p>
           </div>
 
-          {/* Fecha de nacimiento */}
           <div>
             <label className="block text-gray-700 font-semibold mb-1">
               Fecha de nacimiento

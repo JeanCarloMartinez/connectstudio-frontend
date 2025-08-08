@@ -139,6 +139,78 @@ export const registrarAlumno = async ({
   }
 };
 
+// // Funcion para registrar un nuevo alumno
+// export const registrarAlumno = async ({
+//   // Indicar los parametros de la funcion
+//   nombreCompletoUsuario,
+//   matricula,
+//   emailUsuario,
+//   passwordUsuario,
+// }) => {
+//   try {
+//     // Realizar la solicitud al backend
+//     const respuesta = await fetch(`${BASE_URL}/alumnos/signUp`, {
+//       // Metodo de solicitud
+//       method: "POST",
+//       // Tipo de contenido
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       // Pasar los datos a JSON
+//       body: JSON.stringify({
+//         nombreCompletoUsuario,
+//         matricula,
+//         emailUsuario,
+//         passwordUsuario,
+//       }),
+//     });
+
+//     if (respuesta.ok) {
+//       // Mostrar un mensaje en caso de exito
+//       console.log("✅ NUEVO ALUMNO REGISTRADO CON EXITO");
+//     }
+//   } catch (error) {
+//     // Mostrar un mensaje en caso de error
+//     console.log("❌ ERROR AL REGISTRAR AL NUEVO ALUMNO" + error.message);
+//   }
+// }; // Fin de la funcion registrarAlumno
+
+// Función para registrar un nuevo alumno
+export const registrarNuevoAlumno = async ({
+  nombreCompletoUsuario,
+  matricula,
+  emailUsuario,
+  passwordUsuario,
+}) => {
+  try {
+    const res = await fetch(`${BASE_URL}alumnos/registrar`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nombreCompletoUsuario,
+        matricula,
+        emailUsuario,
+        passwordUsuario,
+      }),
+    });
+
+    const data = await res.json();
+
+    return {
+      success: res.ok,
+      mensaje: data.mensaje || data.error,
+    };
+  } catch (error) {
+    console.log("❌ ERROR AL REGISTRAR AL NUEVO ALUMNO: " + error.message);
+    return {
+      success: false,
+      mensaje: "Error de conexión con el servidor",
+    };
+  }
+};
+
 // // funcion para editar los datos de un alumno mediante idUsuario
 // export const editarAlumno = async ({
 //   // Parámetros que se enviarán para la actualización
@@ -195,8 +267,6 @@ export const editarAlumno = async ({
   grupoAlumno,
   promedioAlumno,
 }) => {
-  fotoPerfilUsuario =
-    "https://static.displate.com/857x1200/displate/2023-06-01/223be9f8eccefa8cc09e5de8495b3719_44285b86c3c11293120f7be853096240.jpg"; // Asignar una imagen por defecto si no se proporciona una
   try {
     // Obtener el idUsuario del localStorage
     const idUsuario = localStorage.getItem("idusuario");

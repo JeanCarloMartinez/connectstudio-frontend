@@ -1,73 +1,111 @@
-// Importar useState
 import { useState } from "react";
-// Importar Swal de sweet alert 2
-import Swal from "sweetalert2";
-// Importar funciones del servicio alumno
-import { registrarAlumno } from "./../../../../services/alumno.service";
-// Importar funciones del servicio asesores
-import { registrarAsesor } from "./../../../../services/asesor.service";
-
-// Importar useState y la funcion loginUsuario del servicio de usuario
 import { useNavigate } from "react-router-dom";
-import { loginUsuario } from "../../../../services/usuario.service";
+
+// Importar funciones para el registro de usuarios
+import { registrarNuevoAlumno } from "./../../../../services/alumno.service";
+import { registrarNuevoAsesor } from "./../../../../services/asesor.service";
+import { verificarLoginUsuario } from "./../../../../services/usuario.service"; // Importar función de login
+
+import { toast } from "react-toastify";
+
+// Importar funciones de validación
+import {
+  validarNombre,
+  validarMatricula,
+  validarEmail,
+  validarFinalNombre,
+  validarFinalMatricula,
+  validarFinalEmail,
+} from "./../../../../utils/signUp";
 
 const AuthRegisterForm = ({ onRegisterSuccess }) => {
-  const [nombreCompletoUsuario, setNombreCompletoUsuario] = useState("");
+  const [nombre, setNombre] = useState("");
   const [matricula, setMatricula] = useState("");
-  const [emailUsuario, setEmailUsuario] = useState("");
-  const [passwordUsuario, setPasswordUsuario] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [tipoUsuario, setTipoUsuario] = useState("");
-  const [aceptaTerminos, setAceptaTerminos] = useState(false); // ✅ NUEVO
+  const [tipo, setTipo] = useState("");
+  const [terminosCondiciones, setTerminosCondiciones] = useState(false);
 
-  // Crear una instancia de useNavigate para redirigir a otras rutas
   const navigate = useNavigate();
 
   const registrarNuevaCuenta = async (e) => {
     e.preventDefault();
 
-    if (!aceptaTerminos) {
-      Swal.fire({ title: "Debes aceptar los términos y condiciones." });
+    if (!validarFinalNombre(nombre)) {
+      toast.warn(
+        "Nombre inválido. Solo letras y espacios (mínimo 2, máximo 50)."
+      );
       return;
     }
 
-    if (passwordUsuario !== confirmPassword) {
-      Swal.fire({ title: "Las contraseñas no coinciden." });
+    if (!validarFinalMatricula(matricula)) {
+      toast.warn("La matrícula debe tener exactamente 8 dígitos numéricos.");
       return;
     }
 
-    if (tipoUsuario === "alumno") {
-      Swal.fire({ title: "Registrando alumno..." });
-      await registrarAlumno({
-        nombreCompletoUsuario,
-        matricula,
-        emailUsuario,
-        passwordUsuario,
-      });
-    } else if (tipoUsuario === "asesor") {
-      Swal.fire({ title: "Registrando asesor..." });
-      await registrarAsesor({
-        nombreCompletoUsuario,
-        matricula,
-        emailUsuario,
-        passwordUsuario,
-      });
+    if (!validarFinalEmail(email)) {
+      toast.warn("Correo electrónico inválido.");
+      return;
     }
 
-    // ✅ Iniciar sesión automáticamente después del registro
-    const { success, data } = await loginUsuario({
-      email: emailUsuario,
-      password: passwordUsuario,
-    });
+    if (!terminosCondiciones) {
+      toast.error("Debes aceptar los términos y condiciones.");
+      return;
+    }
 
-    if (success) {
-      localStorage.setItem("idusuario", JSON.stringify(data.usuario.idusuario));
-      const tipo = data.usuario.tipousuario;
+    if (password !== confirmPassword) {
+      toast.error("Las contraseñas no coinciden.");
+      return;
+    }
 
-      if (tipo === "alumno") navigate("/alumno");
-      else if (tipo === "asesor") navigate("/asesor");
-    } else {
-      Swal.fire({ title: "Registro exitoso pero falló el inicio de sesión." });
+    if (!tipo) {
+      toast.error("Selecciona si eres alumno o asesor.");
+      return;
+    }
+
+    try {
+      if (tipo === "alumno") {
+        toast.info("Registrando alumno...");
+        await registrarNuevoAlumno({
+          nombreCompletoUsuario: nombre,
+          matricula,
+          emailUsuario: email,
+          passwordUsuario: password,
+        });
+      } else if (tipo === "asesor") {
+        toast.info("Registrando asesor...");
+        await registrarNuevoAsesor({
+          nombreCompletoUsuario: nombre,
+          matricula,
+          emailUsuario: email,
+          passwordUsuario: password,
+        });
+      }
+
+      // Iniciar sesión automáticamente después del registro
+      const { success, data } = await verificarLoginUsuario({
+        email,
+        password,
+      });
+
+      if (success) {
+        localStorage.setItem(
+          "idusuario",
+          JSON.stringify(data.usuario.idusuario)
+        );
+        const tipoUsuario = data.usuario.tipousuario;
+
+        if (tipoUsuario === "alumno") navigate("/alumno");
+        else if (tipoUsuario === "asesor") navigate("/asesor");
+
+        if (onRegisterSuccess) onRegisterSuccess();
+      } else {
+        toast.error("Registro exitoso pero falló el inicio de sesión.");
+      }
+    } catch (error) {
+      toast.error("Ocurrió un error durante el registro.");
+      console.error(error);
     }
   };
 
@@ -81,7 +119,6 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
       </p>
 
       <form onSubmit={registrarNuevaCuenta}>
-        {/* Nombre completo */}
         <div className="mb-6">
           <label
             htmlFor="name"
@@ -93,14 +130,13 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
             type="text"
             id="name"
             className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-            placeholder="Tu nombre completo"
-            value={nombreCompletoUsuario}
-            onChange={(e) => setNombreCompletoUsuario(e.target.value)}
+            placeholder="Miguel Bernal Montes"
+            value={nombre}
+            onChange={(e) => setNombre(validarNombre(e.target.value))}
             required
           />
         </div>
 
-        {/* Matrícula */}
         <div className="mb-6">
           <label
             htmlFor="matricula"
@@ -114,12 +150,11 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
             className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
             placeholder="00000000"
             value={matricula}
-            onChange={(e) => setMatricula(e.target.value)}
+            onChange={(e) => setMatricula(validarMatricula(e.target.value))}
             required
           />
         </div>
 
-        {/* Correo */}
         <div className="mb-6">
           <label
             htmlFor="email"
@@ -131,14 +166,13 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
             type="email"
             id="email"
             className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-            placeholder="tu.correo@ejemplo.com"
-            value={emailUsuario}
-            onChange={(e) => setEmailUsuario(e.target.value)}
+            placeholder="tu.correo@example.com"
+            value={email}
+            onChange={(e) => setEmail(validarEmail(e.target.value))}
             required
           />
         </div>
 
-        {/* Contraseña */}
         <div className="mb-6">
           <label
             htmlFor="password"
@@ -150,14 +184,13 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
             type="password"
             id="password"
             className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-            placeholder="••••••••"
-            value={passwordUsuario}
-            onChange={(e) => setPasswordUsuario(e.target.value)}
+            placeholder="**********"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
 
-        {/* Confirmar contraseña */}
         <div className="mb-6">
           <label
             htmlFor="confirmPassword"
@@ -169,14 +202,13 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
             type="password"
             id="confirmPassword"
             className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-            placeholder="••••••••"
+            placeholder="**********"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
         </div>
 
-        {/* Tipo de usuario */}
         <div className="mb-6">
           <label className="block text-gray-700 text-sm font-medium mb-2">
             Tipo de Usuario
@@ -188,10 +220,10 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
                 className="form-radio h-5 w-5 text-blue-600"
                 name="userType"
                 value="alumno"
-                checked={tipoUsuario === "alumno"}
-                onChange={() => setTipoUsuario("alumno")}
+                checked={tipo === "alumno"}
+                onChange={() => setTipo("alumno")}
               />
-              <span className="ml-2 text-gray-800">Usuario</span>
+              <span className="ml-2 text-gray-800">Estudiante</span>
             </label>
             <label className="inline-flex items-center cursor-pointer">
               <input
@@ -199,22 +231,21 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
                 className="form-radio h-5 w-5 text-blue-600"
                 name="userType"
                 value="asesor"
-                checked={tipoUsuario === "asesor"}
-                onChange={() => setTipoUsuario("asesor")}
+                checked={tipo === "asesor"}
+                onChange={() => setTipo("asesor")}
               />
-              <span className="ml-2 text-gray-800">Asesor</span>
+              <span className="ml-2 text-gray-800">Asesor Académico</span>
             </label>
           </div>
         </div>
 
-        {/* ✅ Check de términos y enlace */}
         <div className="mb-6">
           <label className="inline-flex items-center">
             <input
               type="checkbox"
               className="form-checkbox h-5 w-5 text-blue-600"
-              checked={aceptaTerminos}
-              onChange={() => setAceptaTerminos(!aceptaTerminos)}
+              checked={terminosCondiciones}
+              onChange={() => setTerminosCondiciones(!terminosCondiciones)}
             />
             <span className="ml-2 text-gray-700 text-sm">
               Acepto los{" "}
@@ -230,7 +261,6 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
           </label>
         </div>
 
-        {/* Botón de registro */}
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-lg hover:bg-blue-700 transition duration-200 shadow-lg transform hover:scale-105"
@@ -239,16 +269,13 @@ const AuthRegisterForm = ({ onRegisterSuccess }) => {
         </button>
       </form>
 
-      {/* Enlace a login */}
       <p className="mt-8 text-center text-gray-600 text-sm">
         ¿Ya tienes cuenta?{" "}
         <a
           href="#"
           className="text-blue-600 hover:underline font-medium"
-          onClick={(e) => {
-            e.preventDefault();
-            localStorage.setItem("view", "Login");
-            window.location.reload();
+          onClick={() => {
+            navigate("/login");
           }}
         >
           Inicia Sesión aquí

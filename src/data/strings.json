@@ -12,19 +12,19 @@
           "nombre": "Ana G.",
           "titulo": "Estudiante de Preparatoria",
           "descipcion": "Connect Studio cambió mi forma de estudiar. Las asesorías entre compañeros son súper efectivas y me ayudaron a entender temas que antes se me complicaban un montón. ¡Totalmente recomendado!",
-          "imagen": null
+          "imagen": "./img/ana_g.png"
         },
         {
           "nombre": "Luis P.",
           "titulo": "Estudiante Universitario",
           "descipcion": "Gracias a esta plataforma, pude mejorar mis calificaciones en matemáticas. Encontrar a alguien que te explique con paciencia y de forma clara es invaluable. ¡Es un salvavidas académico!",
-          "imagen": null
+          "imagen": "./img/luis_p.png"
         },
         {
           "nombre": "Sofía R.",
           "titulo": "Asesora Voluntaria",
           "descipcion": "Me encanta la facilidad con la que puedes conectar con otros estudiantes. No solo recibes ayuda, sino que también aprendes a explicar y eso refuerza tu propio conocimiento. ¡Una comunidad increíble!",
-          "imagen": null
+          "imagen": "./img/sofia_r.png"
         }
       ]
     }

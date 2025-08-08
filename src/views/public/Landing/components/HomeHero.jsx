@@ -1,6 +1,5 @@
 // Importar useNavigate desde react-router-dom para navegar entre rutas
 import { useNavigate } from "react-router-dom";
-
 // Importar textos estaticos desde strings.json
 import strings from "./../../../../data/strings.json";
 
@@ -54,23 +53,25 @@ const HomeHero = () => {
       {/* Imágenes de estudio y asesorías entre alumnos */}
       <div className="absolute bottom-8 left-8 hidden md:block">
         <img
-          src="https://via.placeholder.com/200x150/A7C7E7/FFFFFF?text=Estudio+Profesional"
+          src="/img/online_learning.svg"
           alt="Estudiante estudiando"
-          className="rounded-xl shadow-xl transform rotate-3 hover:rotate-0 transition-transform duration-300 border-2 border-blue-300"
+          className="w-[200px] h-auto rounded-xl shadow-xl transform rotate-3 hover:rotate-0 transition-transform duration-300 border-2 border-blue-300"
         />
       </div>
+
       <div className="absolute top-1/4 right-8 hidden md:block">
         <img
-          src="https://via.placeholder.com/220x160/C3B1E1/FFFFFF?text=Asesoría+Académica"
+          src="/img/online_test.svg"
           alt="Asesoría entre pares"
-          className="rounded-xl shadow-xl transform -rotate-6 hover:rotate-0 transition-transform duration-300 border-2 border-indigo-300"
+          className="w-[220px] h-auto rounded-xl shadow-xl transform -rotate-6 hover:rotate-0 transition-transform duration-300 border-2 border-indigo-300"
         />
       </div>
+
       <div className="absolute bottom-1/4 left-1/4 hidden md:block">
         <img
-          src="https://via.placeholder.com/180x130/E0BBE4/FFFFFF?text=Colaboración+Educativa"
+          src="/img/teaching.svg"
           alt="Colaboración de alumnos"
-          className="rounded-xl shadow-xl transform rotate-6 hover:rotate-0 transition-transform duration-300 border-2 border-purple-300"
+          className="w-[180px] h-auto rounded-xl shadow-xl transform rotate-6 hover:rotate-0 transition-transform duration-300 border-2 border-purple-300"
         />
       </div>
     </section>

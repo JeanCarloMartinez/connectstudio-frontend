@@ -155,6 +155,8 @@ const Admin = () => {
     lastLogin: "2023-10-27 10:30 AM",
   });
 
+  // Modulo de codigo para testear funciones
+
   const classrooms = ["Aula 101", "Laboratorio B", "Salón de Usos Múltiples"];
   const groups = ["Grupo A", "Grupo B", "Grupo C"];
 

@@ -17,6 +17,7 @@ function Alumno() {
   const [selectedAdvisory, setSelectedAdvisory] = useState(null);
   const [viewedStudent, setViewedStudent] = useState(null);
   // const [currentCourseId, setCurrentCourseId] = useState(null); // Estado para el ID del curso
+  const [currentView, setCurrentView] = useState("home"); // Estado para la vista actual
 
   const mockStudents = [
     {
@@ -72,8 +73,8 @@ function Alumno() {
   const handleGoToCourseBoard = (advisory) => {
     setSelectedAdvisory(advisory); // 👈 guarda el advisory antes de cambiar de vista
     setCurrentView("courseBoard");
-    // setSelectedAdvisory(advisory); // Guarda el objeto completo
-    // setCurrentPage("courseBoard");
+    setSelectedAdvisory(advisory); // Guarda el objeto completo
+    setCurrentPage("courseBoard");
   };
 
   const handleBackToMyAdvisories = () => {
