@@ -1,91 +1,140 @@
 import React, { useState, useEffect } from "react";
-import { mostrarCursosPorMatricula } from "../../../services/curso.service";
+import {
+  mostrarCursosPorMatricula,
+  registrarCurso,
+} from "../../../services/curso.service";
 import { obtenerAsesor } from "../../../services/asesor.service";
-import { mostrarActividadesPorCurso } from "../../../services/actividad.service";
-// Importar la funcion registrarCurso del servicio
-import { registrarCurso } from "../../../services/curso.service";
-// Importar la funcion mostrarAsignaturas del servicio
 import { mostrarAsignaturas } from "../../../services/asignatura.service";
+import { subirMaterialPdf } from "../../../services/material.service"; // ajusta la ruta
+import Swal from "sweetalert2";
 
 const AdvisorCourses = () => {
   const [cursos, setCursos] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [actividades, setActividades] = useState([]);
   const [showCreateCourseModal, setShowCreateCourseModal] = useState(false);
   const [newCourseTitle, setNewCourseTitle] = useState("");
   const [newCourseSubject, setNewCourseSubject] = useState("");
-
-  const [asesor, setAsesor] = useState(null);
   const [newCourseDescription, setNewCourseDescription] = useState("");
-
   const [asignaturas, setAsignaturas] = useState([]);
+  const [asesor, setAsesor] = useState(null);
+
+  // Estados para material
+  const [showUploadMaterialModal, setShowUploadMaterialModal] = useState(false);
+  const [materialTitle, setMaterialTitle] = useState("");
+  const [materialFile, setMaterialFile] = useState(null);
 
   useEffect(() => {
-    const solicitarCursos = async () => {
-      const respuestaAsesor = await obtenerAsesor();
-      const asesor = respuestaAsesor.asesor;
-      setAsesor(asesor);
-      if (!asesor || !asesor.matriculaasesor) return;
+    const cargarDatos = async () => {
+      try {
+        const respuestaAsesor = await obtenerAsesor();
+        const asesorData = respuestaAsesor.asesor;
+        setAsesor(asesorData);
 
-      const respuesta = await mostrarCursosPorMatricula(asesor.matriculaasesor);
-      if (respuesta.success) {
-        const cursosFormateados = respuesta.cursos.map((curso) => ({
-          id: curso.idcurso,
-          titulo: curso.titulocurso,
-          nombre: curso.nombreasignatura,
-          estudiantesInscritos: curso.estudiantesInscritos || 0,
-        }));
-        setCursos(cursosFormateados);
+        if (!asesorData?.matriculaasesor) return;
+
+        const respuestaCursos = await mostrarCursosPorMatricula(
+          asesorData.matriculaasesor
+        );
+        if (respuestaCursos.success) {
+          const cursosFormateados = respuestaCursos.cursos.map((curso) => ({
+            id: curso.idcurso,
+            titulo: curso.titulocurso,
+            nombre: curso.nombreasignatura,
+            estudiantesInscritos: curso.estudiantesInscritos || 0,
+          }));
+          setCursos(cursosFormateados);
+        }
+
+        const respuestaAsignaturas = await mostrarAsignaturas();
+        if (respuestaAsignaturas.success) {
+          setAsignaturas(respuestaAsignaturas.asignaturas || []);
+        }
+      } catch (error) {
+        console.error("Error cargando datos:", error);
       }
     };
-    solicitarCursos();
 
-    const solicitarAsignaturas = async () => {
-      const respuesta = await mostrarAsignaturas();
-      if (respuesta.success) {
-        console.log("Datos de asignaturas:", respuesta.asignaturas);
-      }
-
-      setAsignaturas(respuesta.asignaturas || []);
-    };
-    solicitarAsignaturas();
+    cargarDatos();
   }, []);
 
-  const abrirCurso = async (course) => {
+  const abrirCurso = (course) => {
     setSelectedCourse(course);
-    const respuesta = await mostrarActividadesPorCurso(course.id);
-    if (respuesta.success) {
-      setActividades(respuesta.actividades);
-    } else {
-      setActividades([]);
+    // Aquí puedes cargar actividades si lo deseas
+  };
+
+  const handleCreateCourse = async () => {
+    if (!newCourseTitle || !newCourseSubject) {
+      Swal.fire("Error", "Por favor completa los campos requeridos", "warning");
+      return;
+    }
+
+    try {
+      await registrarCurso(
+        newCourseTitle,
+        newCourseDescription,
+        newCourseSubject,
+        asesor.matriculaasesor
+      );
+      Swal.fire("¡Éxito!", "Curso creado correctamente", "success");
+      setShowCreateCourseModal(false);
+      setNewCourseTitle("");
+      setNewCourseDescription("");
+      setNewCourseSubject("");
+      // Refrescar cursos
+      const respuestaCursos = await mostrarCursosPorMatricula(
+        asesor.matriculaasesor
+      );
+      if (respuestaCursos.success) {
+        setCursos(
+          respuestaCursos.cursos.map((curso) => ({
+            id: curso.idcurso,
+            titulo: curso.titulocurso,
+            nombre: curso.nombreasignatura,
+            estudiantesInscritos: curso.estudiantesInscritos || 0,
+          }))
+        );
+      }
+    } catch (error) {
+      Swal.fire("Error", "No se pudo crear el curso", "error");
+      console.error(error);
     }
   };
 
-  const crearCurso = () => {
-    setShowCreateCourseModal(true);
-  };
+  const handleUploadMaterial = async (e) => {
+    e.preventDefault();
 
-  const handleCreateCourse = () => {
-    if (newCourseTitle && newCourseSubject) {
-      const newCourse = {
-        titulo: newCourseTitle,
-        descripcion: newCourseDescription,
-        asignatura: newCourseSubject,
-      };
-
-      // Limpiar los campos de texto del formulario
-      setNewCourseTitle("");
-      setNewCourseDescription("");
-
-      // Cerrar el modal de creación de curso
-      setShowCreateCourseModal(false);
-
-      registrarCurso(
-        newCourse.titulo,
-        newCourse.descripcion,
-        newCourse.asignatura,
-        asesor.matriculaasesor
+    if (!materialTitle || !materialFile || !selectedCourse) {
+      Swal.fire(
+        "Error",
+        "Completa todos los campos para subir el material",
+        "warning"
       );
+      return;
+    }
+
+    try {
+      const respuesta = await subirMaterialPdf({
+        file: materialFile,
+        tituloMaterial: materialTitle,
+        idCurso: selectedCourse.id,
+      });
+
+      if (respuesta.success) {
+        Swal.fire("¡Éxito!", "Material subido correctamente", "success");
+        setShowUploadMaterialModal(false);
+        setMaterialTitle("");
+        setMaterialFile(null);
+        // Aquí puedes recargar materiales si tienes función para eso
+      } else {
+        Swal.fire(
+          "Error",
+          respuesta.mensaje || "No se pudo subir el material",
+          "error"
+        );
+      }
+    } catch (error) {
+      Swal.fire("Error", "Error al subir el material", "error");
+      console.error(error);
     }
   };
 
@@ -96,7 +145,7 @@ const AdvisorCourses = () => {
       </h1>
 
       <button
-        onClick={crearCurso}
+        onClick={() => setShowCreateCourseModal(true)}
         className="mb-6 px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 flex items-center"
       >
         <svg
@@ -104,7 +153,6 @@ const AdvisorCourses = () => {
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <path
             strokeLinecap="round"
@@ -148,6 +196,7 @@ const AdvisorCourses = () => {
         </ul>
       </div>
 
+      {/* Modal Ver Curso */}
       {selectedCourse && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -160,46 +209,18 @@ const AdvisorCourses = () => {
             <p className="text-gray-700 mb-4">
               Estudiantes inscritos: {selectedCourse.estudiantesInscritos}
             </p>
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Actividades del Curso
-            </h3>
-            {actividades.length > 0 ? (
-              <ul className="space-y-4 mb-6">
-                {actividades.map((actividad) => (
-                  <li
-                    key={actividad.idActividad}
-                    className="p-3 bg-gray-50 rounded-lg border border-gray-100"
-                  >
-                    <p className="font-medium text-gray-800">
-                      Título: {actividad.tituloActividad}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Descripción: {actividad.descripcionActividad}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Fecha de entrega:{" "}
-                      {new Date(actividad.fechaEntrega).toLocaleDateString(
-                        "es-MX",
-                        {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        }
-                      )}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-600 mb-6">
-                Este curso aún no tiene actividades.
-              </p>
-            )}
-            <div className="flex justify-end">
+
+            <div className="flex justify-end gap-4 mt-8">
+              <button
+                onClick={() => setShowUploadMaterialModal(true)}
+                className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Subir Material
+              </button>
               <button
                 onClick={() => {
                   setSelectedCourse(null);
-                  setActividades([]);
+                  // Puedes limpiar otras cosas si deseas
                 }}
                 className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
               >
@@ -210,6 +231,7 @@ const AdvisorCourses = () => {
         </div>
       )}
 
+      {/* Modal Crear Curso */}
       {showCreateCourseModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg">
@@ -217,50 +239,39 @@ const AdvisorCourses = () => {
               Crear Nuevo Curso
             </h2>
             <div className="mb-4">
-              <label
-                htmlFor="courseTitle"
-                className="block text-gray-700 text-sm font-medium mb-2"
-              >
+              <label className="block text-gray-700 text-sm font-medium mb-2">
                 Título
               </label>
               <input
                 type="text"
-                id="courseTitle"
                 value={newCourseTitle}
                 onChange={(e) => setNewCourseTitle(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Título del curso"
               />
             </div>
             <div className="mb-4">
-              <label
-                htmlFor="courseSubject"
-                className="block text-gray-700 text-sm font-medium mb-2"
-              >
+              <label className="block text-gray-700 text-sm font-medium mb-2">
                 Descripción
               </label>
               <input
                 type="text"
-                id="courseDescription"
                 value={newCourseDescription}
                 onChange={(e) => setNewCourseDescription(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Descripción del curso"
               />
             </div>
             <div className="mb-4">
-              <label
-                htmlFor="courseSubject"
-                className="block text-gray-700 text-sm font-medium mb-2"
-              >
+              <label className="block text-gray-700 text-sm font-medium mb-2">
                 Asignatura
               </label>
               <select
-                name=""
-                id="courseSubject"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                value={newCourseSubject}
                 onChange={(e) => setNewCourseSubject(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
+                <option value="">Selecciona una asignatura</option>
                 {asignaturas.map((asignatura) => (
                   <option
                     key={asignatura.idasignatura}
@@ -274,17 +285,70 @@ const AdvisorCourses = () => {
             <div className="flex justify-end space-x-4">
               <button
                 onClick={() => setShowCreateCourseModal(false)}
-                className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleCreateCourse}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 Crear Curso
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Subir Material */}
+      {showUploadMaterialModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Subir Material
+            </h2>
+            <form onSubmit={handleUploadMaterial}>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-medium mb-2">
+                  Título del material
+                </label>
+                <input
+                  type="text"
+                  value={materialTitle}
+                  onChange={(e) => setMaterialTitle(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="Ej. Guía de repaso"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-medium mb-2">
+                  Archivo PDF
+                </label>
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={(e) => setMaterialFile(e.target.files[0])}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setShowUploadMaterialModal(false)}
+                  className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Subir
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

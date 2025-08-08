@@ -95,7 +95,7 @@ const AdvisorSidebar = ({ isOpen, toggleSidebar, onNavigate }) => {
                 Cursos
               </button>
             </li>
-            <li>
+            {/* <li>
               <button
                 onClick={() => {
                   onNavigate("advisories");
@@ -119,7 +119,7 @@ const AdvisorSidebar = ({ isOpen, toggleSidebar, onNavigate }) => {
                 </svg>
                 Asesorías
               </button>
-            </li>
+            </li> */}
             <li>
               <button
                 onClick={() => {

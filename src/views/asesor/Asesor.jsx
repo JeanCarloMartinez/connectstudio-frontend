@@ -1,12 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import LayoutHeader from "./components/LayoutHeader";
-// import AdvisorDashboard from "./components/AdvisorDashboard";
-// import MyAdvisories from "./components/MyAdvisories";
-// import CreateAdvisoryForm from "./components/CreateAdvisoryForm";
-// import ManageAdvisory from "./components/ManageAdvisory";
-// import AdvisorProfile from "./components/AdvisorProfile";
-// import LayoutFooter from "./components/LayoutFooter";
-
 import React, { useState, useEffect } from "react";
 import AdvisorLayout from "./components/AdvisorLayout";
 import AdvisorDashboard from "./components/AdvisorDashboard";
@@ -14,9 +5,7 @@ import AdvisorCourses from "./components/AdvisorCourses";
 import AdvisorAdvisories from "./components/AdvisorAdvisories";
 import AdvisorProfile from "./components/AdvisorProfile";
 import AdvisorWelcome from "./components/AdvisorWelcome";
-import AdvisorAgenda from "./components/AdvisorAgenda"; // ✅ Corrección aquí
-// import MyAdvisories from "./components/MyAdvisories"; // Eliminado porque el archivo no existe
-
+import AdvisorAgenda from "./components/AdvisorAgenda";
 // Importar funciones del servicio asesor
 import { obtenerAsesor } from "./../../services/asesor.service";
 // Importar funciones del servicio curso

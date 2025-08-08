@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
   // Crear una instancia de useNavigate para redirigir a otras rutas
-  const navegacion = useNavigate();
+  const navigate = useNavigate();
 
   const [isLogin, setIsLogin] = useState(true);
   const [isRecoveringPassword, setIsRecoveringPassword] = useState(false);
@@ -28,11 +28,11 @@ const AuthPage = () => {
       console.log("Inicio de sesión exitoso:", data);
       console.log("tu eres un :", data.usuario.tipousuario);
       if (data.usuario.tipousuario === "alumno") {
-        navegacion("/alumno");
+        navigate("/alumno");
       } else if (data.usuario.tipousuario === "asesor") {
-        navegacion("/asesor");
+        navigate("/asesor");
       } else if (data.usuario.tipousuario === "admin") {
-        navegacion("/admin");
+        navigate("/admin");
       }
 
       localStorage.setItem("idusuario", JSON.stringify(data.usuario.idusuario));
@@ -118,10 +118,8 @@ const AuthPage = () => {
               <a
                 href="#"
                 className="text-blue-600 hover:underline font-medium"
-                onClick={(e) => {
-                  e.preventDefault();
-                  localStorage.setItem("view", "SignUp");
-                  window.location.reload();
+                onClick={() => {
+                  navigate("/signup");
                 }}
               >
                 Regístrate aquí

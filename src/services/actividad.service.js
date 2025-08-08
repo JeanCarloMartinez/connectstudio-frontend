@@ -1,36 +1,10 @@
-// Url base para consultas al servidor
-const BASE_URL = "http://localhost:3000";
+// Url base para consultas al servidor desde variable de entorno
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-// Función para mostrar todas las actividades
-export const mostrarActividades = async () => {
-  try {
-    const respuesta = await fetch(`${BASE_URL}/actividades`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await respuesta.json();
-
-    if (respuesta.ok) {
-      console.log("✅ ACTIVIDADES OBTENIDAS CON ÉXITO");
-    }
-
-    return {
-      success: respuesta.ok,
-      actividades: data.actividades || [],
-    };
-  } catch (error) {
-    console.log("❌ ERROR AL OBTENER ACTIVIDADES: " + error.message);
-    return { success: false, actividades: [] };
-  }
-};
-
-// Función para mostrar actividades de un curso específico
+// Función para mostrar actividades por ID de curso
 export const mostrarActividadesPorCurso = async (idCurso) => {
   try {
-    const respuesta = await fetch(`${BASE_URL}/actividades/curso/${idCurso}`, {
+    const respuesta = await fetch(`${BASE_URL}actividades/${idCurso}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -40,7 +14,7 @@ export const mostrarActividadesPorCurso = async (idCurso) => {
     const data = await respuesta.json();
 
     if (respuesta.ok) {
-      console.log("✅ ACTIVIDADES DEL CURSO OBTENIDAS");
+      console.log("✅ MOSTRANDO ACTIVIDADES DEL CURSO CON EXITO");
     }
 
     return {
@@ -48,46 +22,24 @@ export const mostrarActividadesPorCurso = async (idCurso) => {
       actividades: data.actividades || [],
     };
   } catch (error) {
-    console.log("❌ ERROR AL OBTENER ACTIVIDADES POR CURSO: " + error.message);
-    return { success: false, actividades: [] };
-  }
-};
-
-// Función para obtener una actividad mediante idActividad
-export const obtenerActividad = async (idActividad) => {
-  try {
-    const respuesta = await fetch(`${BASE_URL}/actividades/${idActividad}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await respuesta.json();
-
-    if (respuesta.ok) {
-      console.log("✅ ACTIVIDAD OBTENIDA CON ÉXITO");
-    }
-
+    console.log("❌ ERROR AL MOSTRAR ACTIVIDADES: " + error.message);
     return {
-      success: respuesta.ok,
-      actividad: data.actividad[0] || null,
+      success: false,
+      actividades: [],
+      mensaje: "Error de conexión con el servidor",
     };
-  } catch (error) {
-    console.log("❌ ERROR AL OBTENER ACTIVIDAD: " + error.message);
-    return { success: false, actividad: null };
   }
 };
 
-// Función para registrar una nueva actividad
-export const registrarActividad = async ({
+// Función para registrar una nueva actividad desde el frontend
+export const registrarActividad = async (
   tituloActividad,
   descripcionActividad,
-  fechaEntrega,
-  idCurso,
-}) => {
+  fechaEntregaActividad,
+  idCurso
+) => {
   try {
-    const respuesta = await fetch(`${BASE_URL}/actividades/registrar`, {
+    const respuesta = await fetch(`${BASE_URL}actividades/registrar`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -95,32 +47,36 @@ export const registrarActividad = async ({
       body: JSON.stringify({
         tituloActividad,
         descripcionActividad,
-        fechaEntrega,
+        fechaEntregaActividad,
         idCurso,
       }),
     });
 
-    if (respuesta.ok) {
-      console.log("✅ ACTIVIDAD REGISTRADA CON ÉXITO");
-    }
+    const data = await respuesta.json();
 
-    return { success: respuesta.ok };
+    return {
+      success: respuesta.ok,
+      mensaje: data.mensaje || data.error,
+    };
   } catch (error) {
     console.log("❌ ERROR AL REGISTRAR ACTIVIDAD: " + error.message);
-    return { success: false };
+    return {
+      success: false,
+      mensaje: "Error de conexión con el servidor",
+    };
   }
 };
 
-// Función para editar una actividad mediante idActividad
-export const editarActividad = async ({
+// Función para editar una actividad desde el frontend
+export const editarActividad = async (
   idActividad,
   tituloActividad,
   descripcionActividad,
-  fechaEntrega,
-  idCurso,
-}) => {
+  fechaEntregaActividad,
+  idCurso
+) => {
   try {
-    const respuesta = await fetch(`${BASE_URL}/actividades/${idActividad}`, {
+    const respuesta = await fetch(`${BASE_URL}actividades/${idActividad}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -128,43 +84,47 @@ export const editarActividad = async ({
       body: JSON.stringify({
         tituloActividad,
         descripcionActividad,
-        fechaEntrega,
+        fechaEntregaActividad,
         idCurso,
       }),
     });
 
-    if (respuesta.ok) {
-      console.log("✅ ACTIVIDAD ACTUALIZADA CON ÉXITO");
-      return { success: true };
-    } else {
-      console.log("❌ ERROR AL ACTUALIZAR ACTIVIDAD");
-      return { success: false };
-    }
+    const data = await respuesta.json();
+
+    return {
+      success: respuesta.ok,
+      mensaje: data.mensaje || data.error,
+    };
   } catch (error) {
-    console.log("❌ ERROR EN editarActividad: " + error.message);
-    return { success: false };
+    console.log("❌ ERROR AL EDITAR ACTIVIDAD: " + error.message);
+    return {
+      success: false,
+      mensaje: "Error de conexión con el servidor",
+    };
   }
 };
 
-// Función para eliminar una actividad mediante idActividad
+// Función para eliminar una actividad desde el frontend
 export const eliminarActividad = async (idActividad) => {
   try {
-    const respuesta = await fetch(`${BASE_URL}/actividades/${idActividad}`, {
+    const respuesta = await fetch(`${BASE_URL}actividades/${idActividad}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    if (respuesta.ok) {
-      console.log("✅ ACTIVIDAD ELIMINADA CON ÉXITO");
-      return { success: true };
-    } else {
-      console.log("❌ ERROR AL ELIMINAR ACTIVIDAD");
-      return { success: false };
-    }
+    const data = await respuesta.json();
+
+    return {
+      success: respuesta.ok,
+      mensaje: data.mensaje || data.error,
+    };
   } catch (error) {
-    console.log("❌ ERROR EN eliminarActividad: " + error.message);
-    return { success: false };
+    console.log("❌ ERROR AL ELIMINAR ACTIVIDAD: " + error.message);
+    return {
+      success: false,
+      mensaje: "Error de conexión con el servidor",
+    };
   }
 };
