@@ -3,8 +3,10 @@ import AdminInput from "./AdminInput";
 import AdminButton from "./AdminButton";
 import Swal from "sweetalert2";
 
-import { editarAlumno_panelAdmin } from "../../../services/alumno.service";
+import { editarAlumno } from "../../../services/alumno.service";
 import { editarAsesor_panelAdmin } from "../../../services/asesor.service";
+
+import { modificarDatosAdministrador } from "../../../services/admin.service";
 
 const AdminEditUserModal = ({ user, onClose, onSave }) => {
   const [editedUser, setEditedUser] = useState(user);
@@ -45,6 +47,10 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
     }
   };
 
+  const cleanValue = (value) => {
+    return value === "No especificado" || value === "" ? null : value;
+  };
+
   const handleSave = async () => {
     if (!validate()) return;
 
@@ -56,40 +62,6 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
       cancelButtonText: "Cancelar",
     });
 
-    // if (result.isConfirmed) {
-    //   console.log("Guardando cambios para el usuario:", editedUser);
-
-    //   try {
-    //     const cleanValue = (value) => {
-    //       return value === "No especificado" ? "" : value;
-    //     };
-
-    //     // Llamar a editarAlumno con los datos necesarios y adaptados
-    //     const response = await editarAlumno_panelAdmin({
-    //       idUsuario: editedUser.id,
-    //       nombreCompletoUsuario: cleanValue(editedUser.name),
-    //       matricula: cleanValue(editedUser.matricula),
-    //       emailUsuario: cleanValue(editedUser.email),
-    //       fechaNacimientoUsuario: cleanValue(editedUser.fechaNacimiento),
-    //       direccionUsuario: cleanValue(editedUser.direccion),
-    //       fotoPerfilUsuario: cleanValue(editedUser.fotoPerfilUsuario),
-    //       carreraAlumno: cleanValue(editedUser.carrera),
-    //       grupoAlumno: cleanValue(editedUser.group),
-    //       promedioAlumno: cleanValue(editedUser.promedio),
-    //     });
-
-    //     if (response.success) {
-    //       Swal.fire("Guardado", response.mensaje, "success");
-    //       onSave(editedUser);
-    //       onClose();
-    //     } else {
-    //       Swal.fire("Error", response.mensaje, "error");
-    //     }
-    //   } catch (error) {
-    //     Swal.fire("Error", "Error inesperado al guardar", "error");
-    //   }
-    // }
-
     if (result.isConfirmed) {
       console.log("Guardando cambios para el usuario:", editedUser);
 
@@ -100,18 +72,16 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
 
         switch (editedUser.role) {
           case "Estudiante":
-            // Llamar a editarAlumno con los datos necesarios y adaptados
-            const response = await editarAlumno_panelAdmin({
-              idUsuario: editedUser.id,
-              nombreCompletoUsuario: cleanValue(editedUser.name),
-              matricula: cleanValue(editedUser.matricula),
-              emailUsuario: cleanValue(editedUser.email),
-              fechaNacimientoUsuario: cleanValue(editedUser.fechaNacimiento),
-              direccionUsuario: cleanValue(editedUser.direccion),
-              fotoPerfilUsuario: cleanValue(editedUser.fotoPerfilUsuario),
-              carreraAlumno: cleanValue(editedUser.carrera),
-              grupoAlumno: cleanValue(editedUser.group),
-              promedioAlumno: cleanValue(editedUser.promedio),
+            const response = await editarAlumno(editedUser.id, {
+              nombrecompletousuario: cleanValue(editedUser.name),
+              emailusuario: cleanValue(editedUser.email),
+              fechanacimientousuario: cleanValue(editedUser.fechaNacimiento),
+              direccionusuario: cleanValue(editedUser.direccion),
+              fotoperfilusuario: cleanValue(editedUser.fotoPerfilUsuario),
+              matriculaalumno: cleanValue(editedUser.matricula),
+              carreraalumno: cleanValue(editedUser.carrera),
+              grupoalumno: cleanValue(editedUser.group),
+              promedioalumno: cleanValue(editedUser.promedio),
             });
 
             if (response.success) {
@@ -121,14 +91,6 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
             } else {
               Swal.fire("Error", response.mensaje, "error");
             }
-            break;
-          case "admin":
-            // llamar a editarAdministrador()
-            Swal.fire(
-              "Info",
-              "Función de edición de administrador no implementada",
-              "info"
-            );
             break;
 
           case "Asesor":
@@ -155,6 +117,26 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
             }
             break;
 
+          case "admin":
+            const response3 = await modificarDatosAdministrador({
+              idUsuario: editedUser.id,
+              nombreCompletoUsuario: cleanValue(editedUser.name),
+              emailUsuario: cleanValue(editedUser.email),
+              fechaNacimientoUsuario: cleanValue(editedUser.fechaNacimiento),
+              direccionUsuario: cleanValue(editedUser.direccion),
+              fotoPerfilUsuario: cleanValue(editedUser.fotoPerfilUsuario),
+              passwordUsuario: cleanValue(editedUser.password), // ✅ Se envía password
+            });
+
+            if (response3.success) {
+              Swal.fire("Guardado", response3.mensaje, "success");
+              onSave(editedUser);
+              onClose();
+            } else {
+              Swal.fire("Error", response3.mensaje, "error");
+            }
+            break;
+
           default:
             Swal.fire("Error", "Tipo de usuario no reconocido", "error");
             break;
@@ -171,7 +153,7 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-3xl transform transition-all duration-300 scale-100 opacity-100">
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-          Editar Alumno
+          Editar Datos
         </h2>
         <form onSubmit={(e) => e.preventDefault()}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -255,6 +237,17 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
                 value={editedUser.promedio}
                 onChange={handleChange}
                 placeholder="Promedio general"
+              />
+            )}
+
+            {editedUser.role?.toLowerCase() === "admin" && (
+              <AdminInput
+                label="Contraseña"
+                name="password"
+                type="password"
+                value={editedUser.password || ""}
+                onChange={handleChange}
+                placeholder="Nueva contraseña"
               />
             )}
           </div>
