@@ -6,11 +6,15 @@ import interactionPlugin from "@fullcalendar/interaction";
 import Swal from "sweetalert2";
 import { mostrarCitasPorMatriculaAlumno } from "./../../../services/cita.service";
 import { obtenerAlumno } from "./../../../services/alumno.service";
+import {
+  obtenerEventosPoriDUsuario,
+  registrarNuevoEvento,
+} from "./../../../services/evento.service";
 
 const AgendaView = () => {
   const [eventos, setEventos] = useState([]);
+  const [usuario, setUsuario] = useState(null);
 
-  // Render personalizado del contenido de eventos
   const renderEvento = (info) => {
     const tipo = info.event.extendedProps?.tipo;
 
@@ -28,76 +32,151 @@ const AgendaView = () => {
   };
 
   useEffect(() => {
-    const solicitarCitas = async () => {
+    const cargarDatos = async () => {
       const respuestaAlumno = await obtenerAlumno();
       const alumno = respuestaAlumno.alumno;
-      const respuesta = await mostrarCitasPorMatriculaAlumno(
+      setUsuario(alumno);
+
+      // Cargar citas
+      const respuestaCitas = await mostrarCitasPorMatriculaAlumno(
         alumno.matriculaalumno
       );
+      const eventosCitas = respuestaCitas.success
+        ? respuestaCitas.citas.map((cita) => ({
+            title: `${cita.titulocurso} - ${cita.nombreasignatura}`,
+            start: `${cita.fechaasesoria.split("T")[0]}T${
+              cita.horainicioasesoria
+            }`,
+            end: `${cita.fechaasesoria.split("T")[0]}T${
+              cita.horaterminoasesoria
+            }`,
+            backgroundColor: "#dbeafe",
+            borderColor: "#3b82f6",
+            textColor: "#1e3a8a",
+            extendedProps: { ...cita },
+          }))
+        : [];
 
-      if (respuesta.success) {
-        const eventosFormateados = respuesta.citas.map((cita) => ({
-          title: `${cita.titulocurso} - ${cita.nombreasignatura}`,
-          start: `${cita.fechaasesoria.split("T")[0]}T${
-            cita.horainicioasesoria
-          }`,
-          end: `${cita.fechaasesoria.split("T")[0]}T${
-            cita.horaterminoasesoria
-          }`,
-          backgroundColor: "#dbeafe", // azul claro
-          borderColor: "#3b82f6", // azul
-          textColor: "#1e3a8a",
-          extendedProps: { ...cita },
-        }));
-        setEventos(eventosFormateados);
-      }
+      // Cargar eventos del usuario
+      const respuestaEventos = await obtenerEventosPoriDUsuario(
+        alumno.idusuario
+      );
+      const eventosUsuario = respuestaEventos.success
+        ? respuestaEventos.eventos.map((evento) => ({
+            title: `📝 ${evento.tituloevento}`,
+            start: `${evento.fechaevento}T${evento.horainicioevento}`,
+            end: `${evento.fechaevento}T${evento.horaterminoevento}`,
+            backgroundColor: "#fef3c7",
+            borderColor: "#f59e0b",
+            textColor: "#78350f",
+            extendedProps: {
+              tipo: "nota",
+              descripcion: evento.descripcionevento,
+              ...evento,
+            },
+          }))
+        : [];
+
+      const todosLosEventos = [...eventosCitas, ...eventosUsuario];
+      console.log("📅 Eventos obtenidos:", todosLosEventos);
+      setEventos(todosLosEventos);
     };
 
-    solicitarCitas();
+    cargarDatos();
   }, []);
 
   const manejarClickFecha = async (info) => {
+    if (!usuario) return;
+
     const fecha = info.dateStr.split("T")[0];
     const hora = info.dateStr.includes("T")
       ? info.dateStr.split("T")[1].slice(0, 5)
       : "08:00";
 
     const { value: formValues } = await Swal.fire({
-      title: "Agregar nota",
+      title: "Agregar nuevo evento",
       html: `
-        <input type="text" id="titulo" class="swal2-input" placeholder="Título de la nota">
-        <input type="date" id="fecha" class="swal2-input" value="${fecha}">
-        <input type="time" id="hora" class="swal2-input" value="${hora}">
-      `,
+      <input type="text" id="tituloevento" class="swal2-input" placeholder="Título del evento">
+      <textarea id="descripcionevento" class="swal2-textarea" placeholder="Descripción del evento"></textarea>
+      <input type="date" id="fechaevento" class="swal2-input" value="${fecha}">
+      <input type="time" id="horainicioevento" class="swal2-input" value="${hora}">
+      <input type="time" id="horaterminoevento" class="swal2-input" value="${hora}">
+    `,
       focusConfirm: false,
       preConfirm: () => {
-        const titulo = document.getElementById("titulo").value;
-        const fecha = document.getElementById("fecha").value;
-        const hora = document.getElementById("hora").value;
-        if (!titulo || !fecha || !hora) {
-          Swal.showValidationMessage("Todos los campos son obligatorios");
+        const tituloevento = document
+          .getElementById("tituloevento")
+          .value.trim();
+        const descripcionevento = document
+          .getElementById("descripcionevento")
+          .value.trim();
+        const fechaevento = document.getElementById("fechaevento").value;
+        const horainicioevento =
+          document.getElementById("horainicioevento").value;
+        const horaterminoevento =
+          document.getElementById("horaterminoevento").value;
+
+        if (
+          !tituloevento ||
+          !fechaevento ||
+          !horainicioevento ||
+          !horaterminoevento
+        ) {
+          Swal.showValidationMessage(
+            "Por favor, complete todos los campos obligatorios"
+          );
           return false;
         }
-        return { titulo, fecha, hora };
+
+        if (horaterminoevento <= horainicioevento) {
+          Swal.showValidationMessage(
+            "La hora de término debe ser mayor que la hora de inicio"
+          );
+          return false;
+        }
+
+        return {
+          tituloevento,
+          descripcionevento,
+          fechaevento,
+          horainicioevento,
+          horaterminoevento,
+        };
       },
     });
 
     if (formValues) {
-      const nuevaNota = {
-        title: `📝 ${formValues.titulo}`,
-        start: `${formValues.fecha}T${formValues.hora}`,
-        end: `${formValues.fecha}T${formValues.hora}`,
-        backgroundColor: "#fef3c7",
-        borderColor: "#f59e0b",
-        textColor: "#78350f",
-        extendedProps: {
-          tipo: "nota",
-          descripcion: "Nota personal agregada por el alumno.",
-        },
+      const evento = {
+        idusuario: usuario.idusuario,
+        tituloevento: formValues.tituloevento,
+        descripcionevento: formValues.descripcionevento,
+        fechaevento: formValues.fechaevento,
+        horainicioevento: formValues.horainicioevento,
+        horaterminoevento: formValues.horaterminoevento,
       };
 
-      setEventos((prev) => [...prev, nuevaNota]);
-      Swal.fire("Nota agregada correctamente", "", "success");
+      const respuesta = await registrarNuevoEvento(evento);
+
+      if (respuesta.success) {
+        const nuevoEvento = {
+          title: evento.tituloevento,
+          start: `${evento.fechaevento}T${evento.horainicioevento}`,
+          end: `${evento.fechaevento}T${evento.horaterminoevento}`,
+          backgroundColor: "#dbeafe", // color para eventos normales
+          borderColor: "#3b82f6",
+          textColor: "#1e3a8a",
+          extendedProps: {
+            tipo: "evento",
+            descripcion: evento.descripcionevento,
+            ...evento,
+          },
+        };
+
+        setEventos((prev) => [...prev, nuevoEvento]);
+        Swal.fire("Evento agregado correctamente", "", "success");
+      } else {
+        Swal.fire("Error", respuesta.mensaje, "error");
+      }
     }
   };
 
@@ -110,68 +189,7 @@ const AgendaView = () => {
         html: `
           <p><strong>Hora:</strong> ${event.start.toLocaleTimeString()}</p>
           <p><strong>Descripción:</strong> ${datos.descripcion}</p>
-          <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
-            <button id="editarNota" class="swal2-confirm swal2-styled" style="background-color: #2563eb;">Editar</button>
-            <button id="eliminarNota" class="swal2-cancel swal2-styled" style="background-color: #dc2626;">Eliminar</button>
-          </div>
         `,
-        showConfirmButton: false,
-        didOpen: () => {
-          document
-            .getElementById("eliminarNota")
-            ?.addEventListener("click", () => {
-              Swal.close();
-              setEventos((prev) => prev.filter((e) => e !== event));
-              Swal.fire("Nota eliminada", "", "success");
-            });
-
-          document
-            .getElementById("editarNota")
-            ?.addEventListener("click", async () => {
-              Swal.close();
-              const { value: formValues } = await Swal.fire({
-                title: "Editar nota",
-                html: `
-                <input type="text" id="titulo" class="swal2-input" value="${event.title.replace(
-                  "📝 ",
-                  ""
-                )}">
-                <input type="date" id="fecha" class="swal2-input" value="${
-                  event.start.toISOString().split("T")[0]
-                }">
-                <input type="time" id="hora" class="swal2-input" value="${event.start
-                  .toTimeString()
-                  .slice(0, 5)}">
-              `,
-                focusConfirm: false,
-                preConfirm: () => {
-                  const titulo = document.getElementById("titulo").value;
-                  const fecha = document.getElementById("fecha").value;
-                  const hora = document.getElementById("hora").value;
-                  if (!titulo || !fecha || !hora) {
-                    Swal.showValidationMessage(
-                      "Todos los campos son obligatorios"
-                    );
-                    return false;
-                  }
-                  return { titulo, fecha, hora };
-                },
-              });
-
-              if (formValues) {
-                const notaEditada = {
-                  ...event,
-                  title: `📝 ${formValues.titulo}`,
-                  start: `${formValues.fecha}T${formValues.hora}`,
-                  end: `${formValues.fecha}T${formValues.hora}`,
-                };
-                setEventos((prev) =>
-                  prev.map((e) => (e === event ? notaEditada : e))
-                );
-                Swal.fire("Nota editada correctamente", "", "success");
-              }
-            });
-        },
       });
     } else {
       Swal.fire({
@@ -203,7 +221,7 @@ const AgendaView = () => {
           events={eventos}
           eventClick={verDetallesCita}
           dateClick={manejarClickFecha}
-          eventContent={renderEvento} // 👈 se usa este renderizador
+          eventContent={renderEvento}
         />
       </div>
     </div>

@@ -78,7 +78,7 @@ function Alumno() {
   };
 
   const handleBackToMyAdvisories = () => {
-    setCurrentCourseId(null);
+    // setCurrentCourseId(null);
     setCurrentPage("myAdvisories");
   };
 
