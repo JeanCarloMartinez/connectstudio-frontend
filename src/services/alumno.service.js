@@ -19,7 +19,7 @@ export const mostrarAlumnos = async () => {
 
     if (respuesta.ok) {
       // Mostrar un mensaje en caso de exito
-      console.log("✅ ALUMNOS OBTENIDOS CON EXITO");
+      // console.log("✅ ALUMNOS OBTENIDOS CON EXITO");
     }
 
     // Retornar si se realizo la operacion y el objeto con la informacion consultada
@@ -313,3 +313,37 @@ export const editarAlumno2 = async (
     };
   }
 }; // Fin de la funcion editarAlumno
+
+// Funcion para solicitar el puntaje de un alumno al backend
+export const obtenerPuntajePorMatricula = async (matricula) => {
+  try {
+    const respuesta = await fetch(`${BASE_URL}alumnos/puntaje/${matricula}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await respuesta.json();
+
+    if (respuesta.ok) {
+      console.log("✅ PUNTAJE OBTENIDO CON ÉXITO");
+      return {
+        success: true,
+        puntaje: data.puntaje,
+      };
+    } else {
+      console.log("❌ MATRÍCULA NO ENCONTRADA");
+      return {
+        success: false,
+        mensaje: data.mensaje || "No se encontró el puntaje",
+      };
+    }
+  } catch (error) {
+    console.log("❌ ERROR AL OBTENER EL PUNTAJE: " + error.message);
+    return {
+      success: false,
+      mensaje: "Error de conexión con el servidor",
+    };
+  }
+};

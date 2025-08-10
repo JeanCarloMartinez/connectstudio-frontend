@@ -11,7 +11,7 @@ const SubjectsPage = () => {
   useEffect(() => {
     const fetchSubjects = async () => {
       const response = await mostrarAsignaturas();
-      console.log("datos recibidos de asignaturas:", response.asignaturas);
+      // console.log("datos recibidos de asignaturas:", response.asignaturas);
       if (response.success) {
         // mapear los datos recibidos para el estado
         const asignaturasFormateadas = response.asignaturas.map(
@@ -106,19 +106,19 @@ const SubjectsPage = () => {
               <td className="px-4 py-3 flex gap-2">
                 <button
                   onClick={() => handleView(subject)}
-                  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                  className="bg-blue-100 text-blue-800 px-3 py-1 rounded hover:bg-blue-200 transition"
                 >
                   Ver
                 </button>
                 <button
                   onClick={() => handleEdit(subject)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"
+                  className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-200 transition"
                 >
                   Editar
                 </button>
                 <button
                   onClick={() => handleDelete(subject)}
-                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
+                  className="bg-red-100 text-red-800 px-3 py-1 rounded hover:bg-red-200 transition"
                 >
                   Eliminar
                 </button>

@@ -19,7 +19,7 @@ export const mostrarCursos = async () => {
 
     if (respuesta.ok) {
       // Mostrar un mensaje en caso de exito
-      console.log("✅ MOSTRANDO CURSOS CON EXITO");
+      // console.log("✅ MOSTRANDO CURSOS CON EXITO");
     }
 
     // Retornar si se realizo la operacion y el objeto con la informacion consultada

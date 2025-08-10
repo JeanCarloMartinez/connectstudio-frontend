@@ -12,13 +12,14 @@ const ClassroomsPage = () => {
   useEffect(() => {
     const fetchClassrooms = async () => {
       const response = await mostrarAulas();
-      console.log("datos recibidos de aulas:", response.aulas);
+      // console.log("datos recibidos de aulas:", response.aulas);
       if (response.success) {
         // mapear los datos recibidos para el estado
         const aulasFormateadas = response.aulas.map((aula) => ({
           idAula: aula.idaula,
           name: aula.nombreaula,
         }));
+        console.log("Informacion obtenida de la solicitud: ", response);
         setClassrooms(aulasFormateadas);
       } else {
         console.error("Error al cargar las aulas:", response.message);
@@ -111,19 +112,19 @@ const ClassroomsPage = () => {
               <td className="px-4 py-3 flex gap-2">
                 <button
                   onClick={() => handleView(classroom)}
-                  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                  className="bg-blue-100 text-blue-800 px-3 py-1 rounded hover:bg-blue-200 transition"
                 >
                   Ver
                 </button>
                 <button
                   onClick={() => handleEdit(classroom)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"
+                  className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-200 transition"
                 >
                   Editar
                 </button>
                 <button
                   onClick={() => handleDelete(classroom)}
-                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
+                  className="bg-red-100 text-red-800 px-3 py-1 rounded hover:bg-red-200 transition"
                 >
                   Eliminar
                 </button>

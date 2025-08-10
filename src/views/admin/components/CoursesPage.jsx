@@ -15,10 +15,13 @@ const CoursesPage = () => {
         const cursosFormateados = respuesta.cursos.map((curso) => ({
           id: curso.idcurso,
           name: curso.titulocurso,
+          asignatura: curso.nombreasignatura,
           description: curso.descripcioncurso || "Sin descripción",
           advisorMatricula: curso.matriculaasesor,
+          nombreAsesor: curso.nombrecompletousuario,
         }));
-        console.log("Cursos formateados:", cursosFormateados);
+        // console.log("Cursos formateados:", cursosFormateados);
+        // console.log("Informacion obtenida de la solicitud: ", respuesta);
         setCourses(cursosFormateados);
       }
     };
@@ -96,10 +99,16 @@ const CoursesPage = () => {
               Nombre del Curso
             </th>
             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+              Asignatura
+            </th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
               Descripción
             </th>
             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
               Matrícula Asesor
+            </th>
+            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+              Nombre del Asesor
             </th>
             <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
               Acciones
@@ -110,24 +119,26 @@ const CoursesPage = () => {
           {courses.map((course) => (
             <tr key={course.id}>
               <td className="px-4 py-3">{course.name}</td>
+              <td className="px-4 py-3">{course.asignatura}</td>
               <td className="px-4 py-3">{course.description}</td>
               <td className="px-4 py-3">{course.advisorMatricula}</td>
+              <td className="px-4 py-3">{course.nombreAsesor}</td>
               <td className="px-4 py-3 flex gap-2">
                 <button
                   onClick={() => handleView(course)}
-                  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                  className="bg-blue-100 text-blue-800 px-3 py-1 rounded hover:bg-blue-200 transition"
                 >
                   Ver
                 </button>
                 <button
                   onClick={() => handleEdit(course)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"
+                  className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-200 transition"
                 >
                   Editar
                 </button>
                 <button
                   onClick={() => handleDelete(course)}
-                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
+                  className="bg-red-100 text-red-800 px-3 py-1 rounded hover:bg-red-200 transition"
                 >
                   Eliminar
                 </button>

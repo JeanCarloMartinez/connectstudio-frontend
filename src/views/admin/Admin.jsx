@@ -51,7 +51,7 @@ const Admin = () => {
   useEffect(() => {
     const fetchAlumnos = async () => {
       const response = await mostrarAlumnos();
-      console.log("Datos recibidos:", response.alumnos); // <-- Aquí
+      // console.log("Datos recibidos:", response.alumnos); // <-- Aquí
       if (response.success) {
         // Mapea los datos para que tengan las propiedades que usas
         const alumnosFormateados = response.alumnos.map((alumno) => ({
@@ -81,7 +81,7 @@ const Admin = () => {
   useEffect(() => {
     const fetchAsesores = async () => {
       const response = await mostrarAsesores();
-      console.log("Datos recibidos asesores:", response.asesores);
+      // console.log("Datos recibidos asesores:", response.asesores);
       if (response.success) {
         const asesoresFormateados = response.asesores.map((asesor) => ({
           id: asesor.idusuario, // usa idUsuario para el id
@@ -109,7 +109,7 @@ const Admin = () => {
 
   const fetchUsuarios = async () => {
     const response = await mostrarUsuarios();
-    console.log("Datos recibidos usuarios:", response.usuarios);
+    // console.log("Datos recibidos usuarios:", response.usuarios);
 
     // Aquí cambia la condición igual que en los otros:
     if (response.usuarios && Array.isArray(response.usuarios)) {
@@ -364,10 +364,33 @@ const Admin = () => {
       case "users":
         return (
           <>
-            <AdminSectionTitle
-              title="Gestión de Usuarios"
-              description="Accede a la lista completa de todos los usuarios de la plataforma."
-            />
+            <div className="flex">
+              <AdminSectionTitle
+                title="Gestión de Usuarios"
+                description="Accede a la lista completa de todos los usuarios de la plataforma."
+              />
+              {/* From Uiverse.io by catraco */}
+              <button
+                title="Add New"
+                className="group cursor-pointer outline-none hover:rotate-90 duration-300"
+                // onClick={alert("Enviando al formulario")}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="50"
+                  height="50"
+                  viewBox="0 0 24 24"
+                  className="stroke-blue-400 fill-none group-hover:fill-blue-800 group-active:stroke-blue-200 group-active:fill-blue-600 group-active:duration-0 duration-300"
+                >
+                  <path
+                    d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
+                    strokeWidth="1.5"
+                  ></path>
+                  <path d="M8 12H16" strokeWidth="1.5"></path>
+                  <path d="M12 16V8" strokeWidth="1.5"></path>
+                </svg>
+              </button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {users.map((user) => (
                 <AdminUserCard

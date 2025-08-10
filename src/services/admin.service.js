@@ -23,7 +23,7 @@ export const obtenerAdmin = async () => {
     const data = await respuesta.json();
 
     if (respuesta.ok) {
-      console.log("✅ ADMIN OBTENIDO CON ÉXITO");
+      // console.log("✅ ADMIN OBTENIDO CON ÉXITO");
     }
 
     return {

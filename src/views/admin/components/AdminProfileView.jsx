@@ -14,6 +14,8 @@ const AdminProfileView = ({ adminUser, onEditProfile }) => {
     // Declarar valores por defecto del objeto admin
     nombre: "Administrador",
     email: "No se ha ingresado un email",
+    fechaNacimiento: "No se ha ingresado una fecha de nacimiento",
+    direccion: "No se ha especificado una direccion",
     fotoPerfil: false,
   });
 
@@ -22,15 +24,17 @@ const AdminProfileView = ({ adminUser, onEditProfile }) => {
     const solicitarDatosAdmin = async () => {
       // Obtener dinamicamente los datos del admin
       const respuesta = await obtenerAdmin();
-      console.log("Datos obtenidos de admin", respuesta.admin);
+      // console.log("Datos obtenidos de admin", respuesta.admin);
       // Guardar los datos del admin en una variable
       const admin = respuesta.admin;
-      console.log(admin);
+      // console.log(admin);
       // Validar si la respuesta fue exitosa
       if (respuesta.success) {
         setDatosAdmin({
           nombre: admin.nombrecompletousuario,
           email: admin.emailusuario,
+          fechaNacimiento: admin.fechanacimientousuario || "ok",
+          direccion: admin.direccionusuarios || "ok",
           fotoPerfil: false,
         });
       }
@@ -40,7 +44,7 @@ const AdminProfileView = ({ adminUser, onEditProfile }) => {
     solicitarDatosAdmin();
   }, []);
 
-  console.log("Datos del administrador:", datosAdmin);
+  // console.log("Datos del administrador:", datosAdmin);
 
   return (
     <>
@@ -60,21 +64,23 @@ const AdminProfileView = ({ adminUser, onEditProfile }) => {
         </div>
 
         <div className="space-y-6 text-gray-700">
-          <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-            <p className="text-xl font-semibold mb-2">Nombre Completo:</p>
-            <p className="text-2xl">{adminUser.role}</p>
-          </div>
-          <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-            <p className="text-xl font-semibold mb-2">Correo Electronico:</p>
-            <p className="text-2xl">{adminUser.lastLogin}</p>
-          </div>
-          <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-            <p className="text-xl font-semibold mb-2">Fecha de Nacimiento:</p>
-            <p className="text-2xl">{adminUser.id}</p>
-          </div>
-          <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-            <p className="text-xl font-semibold mb-2">Dirección:</p>
-            <p className="text-2xl">{adminUser.id}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
+              <p className="text-xl font-semibold mb-2">Nombre Completo:</p>
+              <p className="text-2xl">{datosAdmin.nombre}</p>
+            </div>
+            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
+              <p className="text-xl font-semibold mb-2">Correo Electrónico:</p>
+              <p className="text-2xl">{datosAdmin.email}</p>
+            </div>
+            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
+              <p className="text-xl font-semibold mb-2">Fecha de Nacimiento:</p>
+              <p className="text-2xl">{datosAdmin.fechaNacimiento}</p>
+            </div>
+            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
+              <p className="text-xl font-semibold mb-2">Dirección:</p>
+              <p className="text-2xl">{datosAdmin.direccion}</p>
+            </div>
           </div>
         </div>
 
