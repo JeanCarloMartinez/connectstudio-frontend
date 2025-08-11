@@ -71,6 +71,27 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
         };
 
         switch (editedUser.role) {
+          case "alumno":
+            const response1 = await editarAlumno(editedUser.id, {
+              nombrecompletousuario: cleanValue(editedUser.name),
+              emailusuario: cleanValue(editedUser.email),
+              fechanacimientousuario: cleanValue(editedUser.fechaNacimiento),
+              direccionusuario: cleanValue(editedUser.direccion),
+              fotoperfilusuario: cleanValue(editedUser.fotoPerfilUsuario),
+              matriculaalumno: cleanValue(editedUser.matricula),
+              carreraalumno: cleanValue(editedUser.carrera),
+              grupoalumno: cleanValue(editedUser.group),
+              promedioalumno: cleanValue(editedUser.promedio),
+            });
+
+            if (response1.success) {
+              Swal.fire("Guardado", response.mensaje, "success");
+              onSave(editedUser);
+              onClose();
+            } else {
+              Swal.fire("Error", response.mensaje, "error");
+            }
+            break;
           case "Estudiante":
             const response = await editarAlumno(editedUser.id, {
               nombrecompletousuario: cleanValue(editedUser.name),
@@ -94,6 +115,7 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
             break;
 
           case "Asesor":
+            console.log("Datos del asesor: ", editedUser.password);
             // Llamar a editarAlumno con los datos necesarios y adaptados
             const response2 = await editarAsesor_panelAdmin({
               idUsuario: editedUser.id,
@@ -109,6 +131,30 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
             });
 
             if (response2.success) {
+              Swal.fire("Guardado", response2.mensaje, "success");
+              onSave(editedUser);
+              onClose();
+            } else {
+              Swal.fire("Error", response2.mensaje, "error");
+            }
+            break;
+
+          case "asesor":
+            // Llamar a editarAlumno con los datos necesarios y adaptados
+            const response4 = await editarAsesor_panelAdmin({
+              idUsuario: editedUser.id,
+              nombreCompletoUsuario: cleanValue(editedUser.name),
+              matricula: cleanValue(editedUser.matricula),
+              emailUsuario: cleanValue(editedUser.email),
+              fechaNacimientoUsuario: cleanValue(editedUser.fechaNacimiento),
+              direccionUsuario: cleanValue(editedUser.direccion),
+              fotoPerfilUsuario: cleanValue(editedUser.fotoPerfilUsuario),
+              carreraAsesor: cleanValue(editedUser.carrera),
+              grupoAsesor: cleanValue(editedUser.group),
+              promedioAsesor: cleanValue(editedUser.promedio),
+            });
+
+            if (response4.success) {
               Swal.fire("Guardado", response2.mensaje, "success");
               onSave(editedUser);
               onClose();
@@ -142,6 +188,7 @@ const AdminEditUserModal = ({ user, onClose, onSave }) => {
             break;
         }
       } catch (error) {
+        console.log("Este es el error PACOOOOO: ", error.message);
         Swal.fire("Error", "Error inesperado al guardar", "error");
       }
     }

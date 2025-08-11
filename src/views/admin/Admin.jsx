@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AdminSidebar from "./components/AdminSidebar";
 import AdminHeader from "./components/AdminHeader";
 import AdminUserCard from "./components/AdminUserCard";
@@ -16,23 +16,23 @@ import EnrollStudentPage from "./components/EnrollStudentPage";
 
 import Swal from "sweetalert2";
 
-// Servicio para obtener alumnos desde backend
+// Servicios
 import { mostrarAlumnos } from "./../../services/alumno.service";
-// Servicio para obtener asesores desde backend
 import { mostrarAsesores } from "./../../services/asesor.service";
-// Servicio para obtener y eliminar usuarios desde backend
 import {
   mostrarUsuarios,
   eliminarUsuario,
 } from "./../../services/usuario.service";
-// Servicio para obtener cursos desde backend
 import { mostrarCursos } from "./../../services/curso.service";
+import { registrarAdmin } from "./../../services/admin.service";
+import { registrarAlumno } from "./../../services/alumno.service";
+import { registrarAsesor } from "./../../services/asesor.service";
 
 const Admin = () => {
   const [currentPage, setCurrentPage] = useState("students");
-  const [students, setStudents] = useState([]); // Estado para alumnos
-  const [advisors, setAdvisors] = useState([]); // Estado para asesores
-  const [users, setUsers] = useState([]); // Estado para usuarios
+  const [students, setStudents] = useState([]);
+  const [advisors, setAdvisors] = useState([]);
+  const [users, setUsers] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState("");
   const [selectedClassroomAssign, setSelectedClassroomAssign] = useState("");
   const [selectedAdvisorGroup, setSelectedAdvisorGroup] = useState("");
@@ -45,28 +45,26 @@ const Admin = () => {
     useState(false);
   const [userToEdit, setUserToEdit] = useState(null);
   const [userToView, setUserToView] = useState(null);
-
   const [courses, setCourses] = useState([]);
+
+  // Nuevo estado para dropdown
+  const [isAddDropdownOpen, setIsAddDropdownOpen] = useState(false);
+  const addDropdownRef = useRef(null);
 
   useEffect(() => {
     const fetchAlumnos = async () => {
       const response = await mostrarAlumnos();
-      // console.log("Datos recibidos:", response.alumnos); // <-- Aquí
       if (response.success) {
-        // Mapea los datos para que tengan las propiedades que usas
         const alumnosFormateados = response.alumnos.map((alumno) => ({
-          id: alumno.idusuario, // usa idUsuario para el id
-          name: alumno.nombrecompletousuario, // nombre completo
-          matricula: alumno.matriculaalumno, // matrícula
-          email: alumno.emailusuario, // email
-          direccion: alumno.direccionusuario || "No especificado", // fecha de nacimiento o vacío si es null
-          promedio: alumno.promedioalumno || "No especificado", // promedio
-
-          carrera: alumno.carreraalumno || "No especificado", // carrera o vacío si es null
-          group: alumno.grupoalumno || "No especificado", // grupo o vacío si es null
-
-          fechaNacimiento: alumno.fechanacimientousuario || "No especificado", // fecha de nacimiento o vacío si es null
-
+          id: alumno.idusuario,
+          name: alumno.nombrecompletousuario,
+          matricula: alumno.matriculaalumno,
+          email: alumno.emailusuario,
+          direccion: alumno.direccionusuario || "No especificado",
+          promedio: alumno.promedioalumno || "No especificado",
+          carrera: alumno.carreraalumno || "No especificado",
+          group: alumno.grupoalumno || "No especificado",
+          fechaNacimiento: alumno.fechanacimientousuario || "No especificado",
           role: alumno.tipousuario,
         }));
         setStudents(alumnosFormateados);
@@ -74,28 +72,23 @@ const Admin = () => {
         console.error("Error al cargar alumnos:", response.mensaje);
       }
     };
-
     fetchAlumnos();
   }, []);
 
   useEffect(() => {
     const fetchAsesores = async () => {
       const response = await mostrarAsesores();
-      // console.log("Datos recibidos asesores:", response.asesores);
       if (response.success) {
         const asesoresFormateados = response.asesores.map((asesor) => ({
-          id: asesor.idusuario, // usa idUsuario para el id
-          name: asesor.nombrecompletousuario, // nombre completo
-          matricula: asesor.matriculaasesor, // matrícula
-          email: asesor.emailusuario, // email
-          direccion: asesor.direccionusuario || "No especificado", // fecha de nacimiento o vacío si es null
-          promedio: asesor.promedioasesor || "No especificado", // promedio
-
-          carrera: asesor.carreraasesor || "No especificado", // carrera o vacío si es null
-          group: asesor.grupoasesor || "No especificado", // grupo o vacío si es null
-
-          fechaNacimiento: asesor.fechanacimientousuario || "No especificado", // fecha de nacimiento o vacío si es null
-
+          id: asesor.idusuario,
+          name: asesor.nombrecompletousuario,
+          matricula: asesor.matriculaasesor,
+          email: asesor.emailusuario,
+          direccion: asesor.direccionusuario || "No especificado",
+          promedio: asesor.promedioasesor || "No especificado",
+          carrera: asesor.carreraasesor || "No especificado",
+          group: asesor.grupoasesor || "No especificado",
+          fechaNacimiento: asesor.fechanacimientousuario || "No especificado",
           role: asesor.tipousuario,
         }));
         setAdvisors(asesoresFormateados);
@@ -103,24 +96,19 @@ const Admin = () => {
         console.error("Error al cargar asesores:", response.mensaje);
       }
     };
-
     fetchAsesores();
   }, []);
 
   const fetchUsuarios = async () => {
     const response = await mostrarUsuarios();
-    // console.log("Datos recibidos usuarios:", response.usuarios);
-
-    // Aquí cambia la condición igual que en los otros:
     if (response.usuarios && Array.isArray(response.usuarios)) {
       const usuariosFormateados = response.usuarios.map((usuario) => ({
         id: usuario.idusuario,
         name: usuario.nombrecompletousuario,
         email: usuario.emailusuario,
         role: usuario.tipousuario,
-
-        direccion: usuario.direccionusuario || "No especificado", // fecha de nacimiento o vacío si es null
-        fechaNacimiento: usuario.fechanacimientousuario || "No especificado", // fecha de nacimiento o vacío si es null
+        direccion: usuario.direccionusuario || "No especificado",
+        fechaNacimiento: usuario.fechanacimientousuario || "No especificado",
       }));
       setUsers(usuariosFormateados);
     } else {
@@ -135,7 +123,6 @@ const Admin = () => {
     fetchUsuarios();
   }, []);
 
-  // Ejecutar una sola vez al montar el componente
   useEffect(() => {
     const solicitarCursos = async () => {
       const respuesta = await mostrarCursos();
@@ -143,7 +130,6 @@ const Admin = () => {
         setCourses(respuesta.cursos);
       }
     };
-
     solicitarCursos();
   }, []);
 
@@ -154,8 +140,6 @@ const Admin = () => {
     role: "Administrador",
     lastLogin: "2023-10-27 10:30 AM",
   });
-
-  // Modulo de codigo para testear funciones
 
   const classrooms = ["Aula 101", "Laboratorio B", "Salón de Usos Múltiples"];
   const groups = ["Grupo A", "Grupo B", "Grupo C"];
@@ -171,19 +155,13 @@ const Admin = () => {
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
     });
-
     if (result.isConfirmed) {
       const res = await eliminarUsuario(idUsuario);
       if (res.success) {
-        Swal.fire("Eliminado", res.mensaje, "success");
-
-        // Recarga los usuarios para actualizar la lista
-        if (res.success) {
-          Swal.fire("Eliminado", res.mensaje, "success").then(() => {
-            fetchUsuarios();
-            window.location.reload();
-          });
-        }
+        Swal.fire("Eliminado", res.mensaje, "success").then(() => {
+          fetchUsuarios();
+          window.location.reload();
+        });
       } else {
         Swal.fire("Error", res.mensaje, "error");
       }
@@ -260,7 +238,6 @@ const Admin = () => {
     const name = student.name || "";
     const email = student.email || "";
     const group = student.group || "";
-
     return (
       name.toLowerCase().includes(studentSearchTerm.toLowerCase()) ||
       email.toLowerCase().includes(studentSearchTerm.toLowerCase()) ||
@@ -278,6 +255,166 @@ const Admin = () => {
         .toLowerCase()
         .includes(advisorSearchTerm.toLowerCase())
   );
+
+  // Cerrar dropdown al hacer click fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        addDropdownRef.current &&
+        !addDropdownRef.current.contains(event.target)
+      ) {
+        setIsAddDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleAddNewClick = () => {
+    setIsAddDropdownOpen((prev) => !prev);
+  };
+
+  const handleRegisterOption = (role) => {
+    setIsAddDropdownOpen(false);
+
+    if (role === "Alumno" || role === "Asesor" || role === "Administrador") {
+      Swal.fire({
+        title: `Registrar ${role}`,
+        html: `
+        <input id="nombre" class="swal2-input" placeholder="Nombre completo" />
+        ${
+          role !== "Administrador"
+            ? `<input id="matricula" class="swal2-input" placeholder="Matrícula" />`
+            : ""
+        }
+        <input id="email" type="email" class="swal2-input" placeholder="Correo electrónico" />
+        <input id="password" type="password" class="swal2-input" placeholder="Contraseña" />
+      `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: "Registrar",
+        preConfirm: () => {
+          const nombre = Swal.getPopup().querySelector("#nombre").value.trim();
+          const matricula =
+            role !== "Administrador"
+              ? Swal.getPopup().querySelector("#matricula").value.trim()
+              : null;
+          const email = Swal.getPopup().querySelector("#email").value.trim();
+          const password = Swal.getPopup().querySelector("#password").value;
+
+          if (!nombre) {
+            Swal.showValidationMessage("El nombre es obligatorio");
+            return false;
+          }
+          if (role !== "Administrador" && !matricula) {
+            Swal.showValidationMessage("La matrícula es obligatoria");
+            return false;
+          }
+          if (!email) {
+            Swal.showValidationMessage("El correo electrónico es obligatorio");
+            return false;
+          }
+          if (!password) {
+            Swal.showValidationMessage("La contraseña es obligatoria");
+            return false;
+          }
+
+          return { nombre, matricula, email, password };
+        },
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            if (role === "Administrador") {
+              // Llamar a tu servicio registrarAdmin importado
+              const response = await registrarAdmin({
+                nombreCompletoUsuario: result.value.nombre,
+                emailUsuario: result.value.email,
+                passwordUsuario: result.value.password,
+              });
+
+              if (response.success) {
+                Swal.fire(
+                  "¡Registrado!",
+                  "Administrador registrado correctamente.",
+                  "success"
+                );
+                // Puedes refrescar la lista de usuarios si quieres:
+                fetchUsuarios();
+              } else {
+                Swal.fire(
+                  "Error",
+                  response.mensaje || "Error al registrar administrador",
+                  "error"
+                );
+              }
+            } else if (role === "Asesor") {
+              // Llamar a tu servicio registrarAdmin importado
+              const response = await registrarAsesor({
+                nombreCompletoUsuario: result.value.nombre,
+                matricula: result.value.matricula,
+                emailUsuario: result.value.email,
+                passwordUsuario: result.value.password,
+              });
+
+              if (response.success) {
+                Swal.fire(
+                  "¡Registrado!",
+                  "Asesor registrado correctamente.",
+                  "success"
+                );
+                // Puedes refrescar la lista de usuarios si quieres:
+                fetchUsuarios();
+              } else {
+                Swal.fire(
+                  "Error",
+                  response.mensaje || "Error al registrar asesor",
+                  "error"
+                );
+              }
+            } else if (role === "Alumno") {
+              // Llamar a tu servicio regisatrarAlumno importado
+              const response = await registrarAlumno({
+                nombreCompletoUsuario: result.value.nombre,
+                matricula: result.value.matricula,
+                emailUsuario: result.value.email,
+                passwordUsuario: result.value.password,
+              });
+
+              if (response.success) {
+                Swal.fire(
+                  "¡Registrado!",
+                  "Alumno registrado correctamente.",
+                  "success"
+                );
+                // Puedes refrescar la lista de usuarios si quieres:
+                fetchUsuarios();
+              } else {
+                Swal.fire(
+                  "Error",
+                  response.mensaje || "Error al registrar alumno",
+                  "error"
+                );
+              }
+            } else {
+              // Aquí el manejo para Alumno y Asesor (si ya tienes la API, haz su llamada similar)
+              Swal.fire(
+                "¡Registrado!",
+                `${role} registrado correctamente.`,
+                "success"
+              );
+            }
+          } catch (error) {
+            Swal.fire(
+              "Error",
+              "Error inesperado al registrar usuario",
+              "error"
+            );
+            console.error("Error al registrar:", error);
+          }
+        }
+      });
+    }
+  };
 
   const renderContent = () => {
     switch (currentPage) {
@@ -305,7 +442,7 @@ const Admin = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredStudents.map((student) => (
                 <AdminUserCard
-                  key={student.id} // no uses índice, usa el id único
+                  key={student.id}
                   user={student}
                   type="Alumno"
                   onEdit={() =>
@@ -314,9 +451,7 @@ const Admin = () => {
                   onViewDetails={() =>
                     handleViewUserDetails({ ...student, role: "Estudiante" })
                   }
-                  onDelete={() => {
-                    handleDeleteUser(student.id);
-                  }}
+                  onDelete={() => handleDeleteUser(student.id)}
                 />
               ))}
             </div>
@@ -353,9 +488,7 @@ const Admin = () => {
                   onViewDetails={() =>
                     handleViewUserDetails({ ...advisor, role: "Asesor" })
                   }
-                  onDelete={() => {
-                    handleDeleteUser(advisor.id);
-                  }}
+                  onDelete={() => handleDeleteUser(advisor.id)}
                 />
               ))}
             </div>
@@ -364,33 +497,59 @@ const Admin = () => {
       case "users":
         return (
           <>
-            <div className="flex">
+            <div className="flex items-center justify-between relative">
               <AdminSectionTitle
                 title="Gestión de Usuarios"
                 description="Accede a la lista completa de todos los usuarios de la plataforma."
               />
-              {/* From Uiverse.io by catraco */}
-              <button
-                title="Add New"
-                className="group cursor-pointer outline-none hover:rotate-90 duration-300"
-                // onClick={alert("Enviando al formulario")}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="50"
-                  height="50"
-                  viewBox="0 0 24 24"
-                  className="stroke-blue-400 fill-none group-hover:fill-blue-800 group-active:stroke-blue-200 group-active:fill-blue-600 group-active:duration-0 duration-300"
+              <div className="relative" ref={addDropdownRef}>
+                <button
+                  title="Add New"
+                  className="group cursor-pointer outline-none hover:rotate-90 duration-300"
+                  onClick={handleAddNewClick}
                 >
-                  <path
-                    d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
-                    strokeWidth="1.5"
-                  ></path>
-                  <path d="M8 12H16" strokeWidth="1.5"></path>
-                  <path d="M12 16V8" strokeWidth="1.5"></path>
-                </svg>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="50"
+                    height="50"
+                    viewBox="0 0 24 24"
+                    className="stroke-blue-400 fill-none group-hover:fill-blue-800 group-active:stroke-blue-200 group-active:fill-blue-600 group-active:duration-0 duration-300"
+                  >
+                    <path
+                      d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
+                      strokeWidth="1.5"
+                    ></path>
+                    <path d="M8 12H16" strokeWidth="1.5"></path>
+                    <path d="M12 16V8" strokeWidth="1.5"></path>
+                  </svg>
+                </button>
+
+                {/* Dropdown */}
+                {isAddDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50">
+                    <button
+                      className="block w-full text-left px-4 py-2 hover:bg-blue-100"
+                      onClick={() => handleRegisterOption("Administrador")}
+                    >
+                      Registrar Administrador
+                    </button>
+                    <button
+                      className="block w-full text-left px-4 py-2 hover:bg-blue-100"
+                      onClick={() => handleRegisterOption("Asesor")}
+                    >
+                      Registrar Asesor
+                    </button>
+                    <button
+                      className="block w-full text-left px-4 py-2 hover:bg-blue-100"
+                      onClick={() => handleRegisterOption("Alumno")}
+                    >
+                      Registrar Alumno
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {users.map((user) => (
                 <AdminUserCard
@@ -445,60 +604,6 @@ const Admin = () => {
             <EnrollStudentPage students={students} courses={courses} />
           </>
         );
-
-      // case "classrooms":
-      //   return (
-      //     <>
-      //       <AdminSectionTitle
-      //         title="Asignación de Aulas"
-      //         description="Asigna aulas a los alumnos de manera eficiente."
-      //       />
-      //       <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200 mb-8">
-      //         <h3 className="text-2xl font-semibold text-gray-800 mb-6">
-      //           Asignar Aula a Alumno
-      //         </h3>
-      //         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      //           <div>
-      //             <label className="block text-gray-700 text-sm font-medium mb-2">
-      //               Seleccionar Alumno
-      //             </label>
-      //             <select
-      //               value={selectedStudent}
-      //               onChange={(e) => setSelectedStudent(e.target.value)}
-      //               className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
-      //             >
-      //               <option value="">Selecciona un alumno</option>
-      //               {students.map((student) => (
-      //                 <option key={student.id} value={student.name}>
-      //                   {student.name}
-      //                 </option>
-      //               ))}
-      //             </select>
-      //           </div>
-      //           <div>
-      //             <label className="block text-gray-700 text-sm font-medium mb-2">
-      //               Seleccionar Aula
-      //             </label>
-      //             <select
-      //               value={selectedClassroomAssign}
-      //               onChange={(e) => setSelectedClassroomAssign(e.target.value)}
-      //               className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
-      //             >
-      //               <option value="">Selecciona un aula</option>
-      //               {classrooms.map((classroom) => (
-      //                 <option key={classroom} value={classroom}>
-      //                   {classroom}
-      //                 </option>
-      //               ))}
-      //             </select>
-      //           </div>
-      //         </div>
-      //         <AdminButton onClick={handleAssignClassroom}>
-      //           Asignar Aula
-      //         </AdminButton>
-      //       </div>
-      //     </>
-      //   );
       case "profile":
         return (
           <AdminProfileView

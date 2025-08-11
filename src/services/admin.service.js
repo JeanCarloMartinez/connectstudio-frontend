@@ -8,6 +8,44 @@ const cleanValue = (value) => {
   return value;
 };
 
+export const registrarAdmin = async ({
+  nombreCompletoUsuario,
+  emailUsuario,
+  passwordUsuario,
+}) => {
+  try {
+    const respuesta = await fetch(`${BASE_URL}admins/registrar`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nombreCompletoUsuario,
+        emailUsuario,
+        passwordUsuario,
+      }),
+    });
+
+    const data = await respuesta.json();
+
+    if (respuesta.ok) {
+      return {
+        success: true,
+        mensaje: data.mensaje || "Administrador registrado correctamente",
+      };
+    } else {
+      return {
+        success: false,
+        mensaje: data.error || "Error al registrar administrador",
+      };
+    }
+  } catch (error) {
+    console.error("❌ ERROR AL REGISTRAR ADMIN:", error.message);
+    return {
+      success: false,
+      mensaje: "Error inesperado al registrar administrador",
+    };
+  }
+};
+
 // Función para obtener los datos de un administrador mediante el idUsuario
 export const obtenerAdmin = async () => {
   try {
